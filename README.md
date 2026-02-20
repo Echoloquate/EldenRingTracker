@@ -2,7 +2,7 @@
 
 Item checklist trackers for Elden Ring and Dark Souls III randomizers, with real-time multiplayer sync so you can track progress with friends.
 
-**https://soulsrandomizer.com**
+**https://www.soulsrandomizertracker.com**
 
 ## Features
 
