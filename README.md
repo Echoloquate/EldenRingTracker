@@ -2,6 +2,8 @@
 
 Item checklist trackers for Elden Ring and Dark Souls III randomizers, with real-time multiplayer sync so you can track progress with friends.
 
+**https://soulsrandomizer.com**
+
 ## Features
 
 - **Elden Ring tracker** (`index.html`) — covers base game + Shadow of the Erdtree DLC
