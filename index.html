@@ -514,6 +514,20 @@
 
   .sync-error[hidden] { display: none; }
 
+  .nav-link {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: var(--gold); }
+
   @media (max-width: 600px) {
     .controls { padding: 0.6rem 1rem; }
     main { padding: 0 1rem 3rem; }
@@ -528,6 +542,7 @@
 
 <header>
   <h1>Elden Ring<span>Item Tracker</span></h1>
+  <a href="ds3.html" class="nav-link">Switch to Dark Souls III Tracker &rarr;</a>
 </header>
 
 <div class="progress-area">
