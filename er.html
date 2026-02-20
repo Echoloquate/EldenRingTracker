@@ -747,6 +747,7 @@ let itemsRef = null;
 let firebaseListener = null;
 let categoriesRef = null;
 let categoriesListener = null;
+let waitingForInitialData = false;
 
 // Category toggle state - default: all on except "Other Bosses"
 const DEFAULT_CATEGORIES = CATEGORIES.map(c => c.id).filter(id => id !== 'boss');
@@ -804,9 +805,18 @@ function joinRoom(code) {
   firebaseListener = itemsRef.on('value', (snapshot) => {
     document.getElementById('syncError').hidden = true;
     checkedState = snapshot.val() || {};
-    refreshUI();
+    if (waitingForInitialData) {
+      waitingForInitialData = false;
+      render();
+    } else {
+      refreshUI();
+    }
   }, (error) => {
-    showSyncError('Firebase sync failed: ' + error.message + ' - check your database rules.');
+    showSyncError('Firebase sync failed: ' + error.message + ' — check your database rules.');
+    if (waitingForInitialData) {
+      waitingForInitialData = false;
+      render();
+    }
   });
 
   // Sync category toggles with room
@@ -1142,12 +1152,14 @@ document.getElementById('leaveRoomBtn').addEventListener('click', () => {
 // Init
 // ---------------------------------------------------------------------------
 renderCategoryToggles();
-render();
 
 const savedRoom = localStorage.getItem(ROOM_KEY);
 if (savedRoom) {
+  // Delay render until first Firebase snapshot — spinner stays visible
+  waitingForInitialData = true;
   joinRoom(savedRoom);
 } else {
+  render();
   document.getElementById('roomOverlay').hidden = false;
 }
 </script>

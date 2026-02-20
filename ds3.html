@@ -1073,6 +1073,7 @@ let currentFilter = 'all';
 let currentRoom = null;
 let itemsRef = null;
 let firebaseListener = null;
+let waitingForInitialData = false;
 
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -1096,9 +1097,18 @@ function joinRoom(code) {
   firebaseListener = itemsRef.on('value', (snapshot) => {
     document.getElementById('syncError').hidden = true;
     checkedState = snapshot.val() || {};
-    refreshUI();
+    if (waitingForInitialData) {
+      waitingForInitialData = false;
+      render();
+    } else {
+      refreshUI();
+    }
   }, (error) => {
     showSyncError('Firebase sync failed: ' + error.message + ' \u2014 check your database rules.');
+    if (waitingForInitialData) {
+      waitingForInitialData = false;
+      render();
+    }
   });
 
   document.getElementById('roomOverlay').hidden = true;
@@ -1374,12 +1384,12 @@ document.getElementById('leaveRoomBtn').addEventListener('click', () => {
 // ---------------------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------------------
-render();
-
 const savedRoom = localStorage.getItem(ROOM_KEY);
 if (savedRoom) {
+  waitingForInitialData = true;
   joinRoom(savedRoom);
 } else {
+  render();
   document.getElementById('roomOverlay').hidden = false;
 }
 </script>
