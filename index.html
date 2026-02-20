@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elden Ring — Item Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --gold: #c8a84e;
+    --gold-dim: #8a7235;
+    --gold-bright: #e8cc6a;
+    --bg: #0d0c0a;
+    --bg-card: #16140f;
+    --bg-card-hover: #1d1a13;
+    --border: #2a2518;
+    --border-light: #3d3525;
+    --text: #c4b99a;
+    --text-dim: #7a7060;
+    --text-bright: #e8dcc4;
+    --checked-text: #4a4438;
+    --green: #5a8a4a;
+    --green-dim: #3a5a2a;
+    --red: #8a3a3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Subtle texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-conic-gradient(rgba(200,168,78,0.008) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  header {
+    text-align: center;
+    padding: 3rem 1rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(200,168,78,0.06) 0%, transparent 100%);
+  }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(200,168,78,0.15);
+  }
+
+  header h1 span {
+    display: block;
+    font-size: 0.45em;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    margin-top: 0.3rem;
+    font-weight: 400;
+  }
+
+  /* Progress bar area */
+  .progress-area {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.2rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .progress-stats .count { color: var(--gold); }
+  .progress-stats .percent { color: var(--text-dim); }
+
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px rgba(200,168,78,0.3);
+  }
+
+  /* Controls */
+  .controls {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .controls input[type="search"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.5rem 0.8rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-family: 'Crimson Text', serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .controls input[type="search"]:focus {
+    border-color: var(--gold-dim);
+  }
+
+  .controls input[type="search"]::placeholder {
+    color: var(--text-dim);
+  }
+
+  .filter-btn {
+    padding: 0.4rem 0.8rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .filter-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(200,168,78,0.08); }
+
+  /* Main content */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* DLC divider */
+  .dlc-divider {
+    text-align: center;
+    padding: 2.5rem 0 0.5rem;
+  }
+
+  .dlc-divider h2 {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+  }
+
+  .dlc-divider h2::before,
+  .dlc-divider h2::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim));
+  }
+
+  .dlc-divider h2::before { right: calc(100% + 16px); }
+  .dlc-divider h2::after { left: calc(100% + 16px); transform: scaleX(-1); }
+
+  /* Location sections */
+  .location {
+    margin-top: 1.5rem;
+  }
+
+  .location-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s;
+  }
+
+  .location-header:hover { border-bottom-color: var(--gold-dim); }
+
+  .location-header h3 {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text-bright);
+    letter-spacing: 0.06em;
+  }
+
+  .location-count {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .location-count .done { color: var(--green); }
+
+  .location.all-done .location-header h3 { color: var(--gold-dim); }
+  .location.all-done .location-count .done { color: var(--gold-dim); }
+
+  /* Item list */
+  .items { padding: 0.3rem 0; }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 4px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .item:hover { background: var(--bg-card-hover); }
+
+  .item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 3px;
+    margin-top: 3px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    background: transparent;
+  }
+
+  .item input[type="checkbox"]:hover {
+    border-color: var(--gold-dim);
+  }
+
+  .item input[type="checkbox"]:checked {
+    background: var(--gold-dim);
+    border-color: var(--gold-dim);
+  }
+
+  .item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: var(--bg);
+    font-weight: bold;
+  }
+
+  .item-text {
+    flex: 1;
+    transition: color 0.2s;
+  }
+
+  .item.checked .item-text {
+    color: var(--checked-text);
+    text-decoration: line-through;
+    text-decoration-color: var(--border);
+  }
+
+  .item-replaces {
+    display: inline;
+    font-weight: 600;
+    color: var(--gold);
+    transition: color 0.2s;
+  }
+
+  .item.checked .item-replaces {
+    color: var(--checked-text);
+  }
+
+  /* Collapse animation */
+  .items[data-collapsed="true"] {
+    display: none;
+  }
+
+  /* Hidden by filter */
+  .item[data-hidden="true"] { display: none; }
+  .location[data-hidden="true"] { display: none; }
+
+  /* Reset button */
+  .reset-area {
+    text-align: center;
+    padding: 3rem 0;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  .reset-btn {
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--red);
+    border-radius: 4px;
+    color: var(--red);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    background: rgba(138,58,58,0.15);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+  /* Room picker modal */
+  .room-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .room-overlay[hidden] { display: none; }
+
+  .room-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+  }
+
+  .room-modal h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .room-modal p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .room-modal input[type="text"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    color: var(--gold-bright);
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.25em;
+    text-align: center;
+    text-transform: uppercase;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .room-modal input[type="text"]:focus {
+    border-color: var(--gold-dim);
+  }
+
+  .room-modal input[type="text"]::placeholder {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  .room-modal .room-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .room-modal .room-btn {
+    flex: 1;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .room-modal .room-btn:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  .room-modal .room-btn.primary {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+    background: rgba(200,168,78,0.08);
+  }
+
+  .room-modal .room-btn.primary:hover {
+    background: rgba(200,168,78,0.15);
+  }
+
+  .room-modal .room-error {
+    color: var(--red);
+    font-size: 0.85rem;
+    margin-top: 0.7rem;
+    min-height: 1.2em;
+  }
+
+  /* Room badge in controls bar */
+  .room-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  .room-badge code {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+  }
+
+  .room-badge .leave-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    margin-left: 0.2rem;
+    transition: color 0.2s;
+  }
+
+  .room-badge .leave-btn:hover {
+    color: var(--red);
+  }
+
+  @media (max-width: 600px) {
+    .controls { padding: 0.6rem 1rem; }
+    main { padding: 0 1rem 3rem; }
+    .progress-area { padding: 0.8rem 1rem; }
+  }
+</style>
+<!-- Firebase SDK (compat builds for simplicity — no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>Elden Ring<span>Item Tracker</span></h1>
+</header>
+
+<div class="progress-area">
+  <div class="progress-stats">
+    <span class="count" id="progressCount">0 / 0</span>
+    <span class="percent" id="progressPercent">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <input type="search" id="searchBox" placeholder="Search items or locations…">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="unchecked">Remaining</button>
+  <button class="filter-btn" data-filter="checked">Completed</button>
+  <span class="room-badge" id="roomBadge" hidden>
+    Room <code id="roomCodeDisplay"></code>
+    <button class="leave-btn" id="leaveRoomBtn">Leave</button>
+  </span>
+</div>
+
+<div class="room-overlay" id="roomOverlay">
+  <div class="room-modal">
+    <h2>Multiplayer Tracker</h2>
+    <p>Create or join a room to sync progress with your group.</p>
+    <input type="text" id="roomCodeInput" placeholder="Enter room code" maxlength="6" spellcheck="false" autocomplete="off">
+    <div class="room-actions">
+      <button class="room-btn primary" id="createRoomBtn">Create Room</button>
+      <button class="room-btn" id="joinRoomBtn">Join Room</button>
+    </div>
+    <div class="room-error" id="roomError"></div>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<script>
+// =============================================================================
+// FIREBASE CONFIGURATION
+// To use this tracker, you need a Firebase project with a Realtime Database.
+//
+// 1. Go to https://console.firebase.google.com/ and create a project
+// 2. In the project, go to "Build" → "Realtime Database" → "Create Database"
+//    - Choose any region, start in "test mode" (or add your own security rules)
+// 3. Go to Project Settings (gear icon) → "General" → scroll to "Your apps"
+//    - Click the web icon (</>) to register a web app
+//    - Copy the firebaseConfig object and paste it below, replacing the placeholder
+// =============================================================================
+const firebaseConfig = {
+
+  apiKey: "AIzaSyAEWn2CFxUsowJDYrfog0HZeYCpzz2RKQA",
+
+  authDomain: "elden-ring-tracker-de9af.firebaseapp.com",
+
+  databaseURL: "https://elden-ring-tracker-de9af-default-rtdb.firebaseio.com",
+
+  projectId: "elden-ring-tracker-de9af",
+
+  storageBucket: "elden-ring-tracker-de9af.firebasestorage.app",
+
+  messagingSenderId: "1049629299505",
+
+  appId: "1:1049629299505:web:ef3ee3865bc3d2375e5610"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const DATA = [
+  { section: null, locations: [
+    { name: "Limgrave", items: [
+      { desc: "In a chest at the top of a tower in Fort Haight", replaces: "Dectus Medallion (Left)" },
+      { desc: "At the statue in the Third Church of Marika, northeast of the Mistwood", replaces: "Sacred Tear" },
+      { desc: "Under a Golden Seed tree in front of Fort Haight", replaces: "Golden Seed" },
+      { desc: "Sold by Kale at the Church of Elleh", replaces: null },
+      { desc: "Sold by the Nomadic Merchant between Saintsbridge and Summonwater Village", replaces: null },
+      { desc: "Sold by the Nomadic Merchant in front of Coastal Cave", replaces: null },
+      { desc: "Sold by the Nomadic Merchant in the Mistwood along the road to Fort Haight", replaces: null },
+      { desc: "Sold by Patches (Murkwater Cave)", replaces: null },
+    ]},
+    { name: "Stormhill", items: [
+      { desc: "Dropped by Margit the Fell Omen or Morgott the Omen King", replaces: "Talisman Pouch" },
+      { desc: "Under a Golden Seed tree along the road from Gatefront to Stormhill Shack", replaces: "Golden Seed" },
+    ]},
+    { name: "Stormveil Castle", items: [
+      { desc: "In the dark room before the Rusty Key door, guarded by a Banished Knight", replaces: "Rusty Key" },
+      { desc: "Dropped by Godrick the Grafted", replaces: "Godrick's Great Rune, Remembrance of the Grafted" },
+      { desc: "Under a Golden Seed tree on the way to Godrick the Grafted", replaces: "Golden Seed" },
+    ]},
+    { name: "Weeping Peninsula", items: [
+      { desc: "Dropped by Leonine Misbegotten south of Castle Morne", replaces: "Grafted Blade Greatsword" },
+      { desc: "At the interesting statue in the Church of Pilgrimage on the north coast", replaces: "Sacred Tear" },
+      { desc: "At the statue in Callu Baptismal Church, south of Ailing Village", replaces: "Sacred Tear" },
+      { desc: "At the statue in the Fourth Church of Marika, near the peninsula's west coast", replaces: "Sacred Tear" },
+      { desc: "Under the Golden Seed tree straight north of Castle Morne", replaces: "Golden Seed" },
+      { desc: "Sold by the Isolated Merchant at the Isolated Merchant Shack near the southwest shore", replaces: null },
+      { desc: "Sold by the Nomadic Merchant at Castle Morne Rampart", replaces: null },
+    ]},
+    { name: "Liurnia", items: [
+      { desc: "Given by Albus the Albinauric in Village of the Albinauric (disguised as a pot — roll into him)", replaces: "Haligtree Secret Medallion (Right)" },
+      { desc: "Guarded by Glintstone Dragon Smarag", replaces: "Academy Glintstone Key" },
+      { desc: "In a chest at the topmost of the Belfries", replaces: "Imbued Sword Key" },
+      { desc: "Dropped by Royal Knight Loretta", replaces: "Loretta's Greatbow, Ash of War: Loretta's Slash" },
+      { desc: "At the statue in Church of Irith, south of Lake-Facing Cliffs", replaces: "Sacred Tear" },
+      { desc: "Under a Golden Seed tree after Manor Upper Level in Caria Manor", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree near the Ravine-Veiled Village before Ruin-Strewn Precipice", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree west of the stairway up to South Raya Lucaria Gate", replaces: "Golden Seed" },
+      { desc: "Sold by Iji", replaces: null },
+      { desc: "Sold by the Nomadic Merchant by the Liurnia Lake Shore Site of Grace", replaces: null },
+      { desc: "Sold by Pidia (behind Caria Manor, drop down from the Three Sisters)", replaces: null },
+    ]},
+    { name: "Bellum Highway", items: [
+      { desc: "At the interesting statue in Bellum Church", replaces: "Sacred Tear" },
+      { desc: "At the statue in Church of Inhibition", replaces: "Sacred Tear" },
+      { desc: "Sold by Nomadic Merchant down the cliffside pathway from Bellum Church", replaces: null },
+    ]},
+    { name: "Academy of Raya Lucaria", items: [
+      { desc: "On a robed corpse on the rooftop path, accessed by looping from Debate Parlor", replaces: "Imbued Sword Key" },
+      { desc: "In a chest unlocked by Discarded Palace Key in the Grand Library", replaces: "Dark Moon Ring" },
+      { desc: "Dropped by Red Wolf of Radagon", replaces: "Memory Stone" },
+      { desc: "Dropped by Rennala", replaces: "Great Rune of the Unborn, Remembrance of the Full Moon Queen" },
+      { desc: "Under a Golden Seed tree on a bridge north of Main Academy Gate", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree in the courtyard after Debate Parlor, along a cliffside", replaces: "Golden Seed" },
+      { desc: "Sold by Isolated Merchant southeast of Main Academy Gate", replaces: null },
+    ]},
+    { name: "Divine Tower of Liurnia", items: [
+      { desc: "At the top of the tower, accessed after traversing Carian Study Hall", replaces: "Stargazer Heirloom, Cursemark of Death" },
+    ]},
+    { name: "Siofra River", items: [
+      { desc: "Dropped by Ancestor Spirit", replaces: "Ancestral Follower Ashes" },
+      { desc: "Under a Golden Seed tree across a narrow stone bridge before the elevator to Caelid", replaces: "Golden Seed" },
+      { desc: "Sold by the Abandoned Merchant near Worshippers' Woods (scaffolding path)", replaces: null },
+    ]},
+    { name: "Caelid", items: [
+      { desc: "In a chest behind a magical barrier in Sellia (light flames around town)", replaces: "Imbued Sword Key" },
+      { desc: "Dropped by Starscourge Radahn", replaces: "Radahn's Great Rune, Remembrance of the Starscourge" },
+      { desc: "At the statue in Church of the Plague", replaces: "Sacred Tear" },
+      { desc: "Under a Golden Seed tree on the road from Southern Aeonia Swamp Bank to Impassable Greatbridge", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree up the stairs at the north end of Sellia", replaces: "Golden Seed" },
+      { desc: "Sold by the Nomadic Merchant between Caelid Highway North and Aeonia Swamp Shore", replaces: null },
+      { desc: "Sold by the Nomadic Merchant southwest of southern Aeonia Swamp Bank", replaces: null },
+    ]},
+    { name: "Dragonbarrow", items: [
+      { desc: "In a chest up the first ladder at Fort Faroth", replaces: "Dectus Medallion (Right)" },
+      { desc: "Under a Golden Seed tree on the road from Farum Greatbridge to Bestial Sanctum", replaces: "Golden Seed" },
+      { desc: "Sold by the Isolated Merchant at Isolated Merchant's Shack", replaces: null },
+    ]},
+    { name: "Nokron, Eternal City", items: [
+      { desc: "Dropped by Mimic Tear", replaces: "Silver Tear Mask, Larval Tear 2x" },
+      { desc: "Dropped by Regal Ancestor Spirit", replaces: "Remembrance of the Regal Ancestor" },
+      { desc: "Dropped by Valiant Gargoyles after Siofra Aqueduct", replaces: "Gargoyle's Greatsword, Gargoyle's Twinblade" },
+    ]},
+    { name: "Ruin-Strewn Precipice", items: [
+      { desc: "Dropped by Magma Wyrm Makar", replaces: "Magma Wyrm's Scalesword, Dragon Heart" },
+    ]},
+    { name: "Ainsel River", items: [
+      { desc: "Dropped by Astel, Naturalborn of the Void", replaces: "Remembrance of the Naturalborn" },
+      { desc: "Under a Golden Seed tree overlooking the elevator to Nokstella Waterfall Basin", replaces: "Golden Seed" },
+    ]},
+    { name: "Ainsel River Downstream", items: [
+      { desc: "Dropped by Dragonkin Soldier of Nokstella", replaces: "Frozen Lightning Spear" },
+      { desc: "Sold by the Hermit Merchant past the rock-slinging Malformed Star", replaces: null },
+    ]},
+    { name: "Altus Plateau", items: [
+      { desc: "Dropped by Elemer of the Briar", replaces: "Marais Executioner's Sword, Briar Greatshield" },
+      { desc: "At the interesting statue in Stormcaller Church", replaces: "Sacred Tear" },
+      { desc: "At the statue in the Second Church of Marika", replaces: "Sacred Tear" },
+      { desc: "Under a Golden Seed tree down the southeast road from Windmill Village", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree up the stairs from Outer Wall Phantom Tree", replaces: "Golden Seed, Golden Seed" },
+      { desc: "Under a Golden Seed tree next to the Erdtree-Gazing Hill Site of Grace", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree north of Altus Highway Junction", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree north of Altus Plateau Minor Erdtree", replaces: "Golden Seed" },
+      { desc: "Sold by the Nomadic Merchant at the Forest-Spanning Greatbridge", replaces: null },
+    ]},
+    { name: "Capital Outskirts", items: [
+      { desc: "Under the Golden Seed tree at Outer Wall Phantom Tree", replaces: "Golden Seed, Golden Seed" },
+      { desc: "Sold by the Hermit Merchant at the Hermit's Merchant Shack", replaces: null },
+    ]},
+    { name: "Leyndell", items: [
+      { desc: "Given by Melina after defeating Morgott", replaces: "Rold Medallion" },
+      { desc: "Dropped by Godfrey, First Elden Lord, in the Erdtree Sanctuary", replaces: "Talisman Pouch" },
+      { desc: "Dropped by Morgott the Omen King", replaces: "Morgott's Great Rune, Remembrance of the Omen King" },
+      { desc: "Under the Golden Seed tree from West Capital Rampart, up the dragon's wing", replaces: "Golden Seed" },
+    ]},
+    { name: "Subterranean Shunning-Grounds", items: [
+      { desc: "Dropped by Mohg the Omen", replaces: "Bloodflame Talons" },
+    ]},
+    { name: "Roundtable Hold", items: [
+      { desc: "Sold by Twin Maiden Husks", replaces: null },
+    ]},
+    { name: "Mt. Gelmir", items: [
+      { desc: "Under a Golden Seed tree before the Road of Iniquity Site of Grace", replaces: "Golden Seed" },
+      { desc: "Under a Golden Tree following Seethwater River north", replaces: "Golden Seed" },
+      { desc: "Sold by the Nomadic Merchant before Ninth Mt. Gelmir Campsite", replaces: null },
+    ]},
+    { name: "Volcano Manor", items: [
+      { desc: "Given by Tanith upon joining, or in her chair after defeating Rykard", replaces: "Drawing-Room Key" },
+      { desc: "Dropped by Godskin Noble", replaces: "Godskin Stitcher, Noble Presence" },
+      { desc: "Dropped by Rykard", replaces: "Rykard's Great Rune, Remembrance of the Blasphemous" },
+    ]},
+    { name: "Forbidden Lands", items: [
+      { desc: "Under a Golden Seed tree before the stairs to the Grand Lift of Rold", replaces: "Golden Seed" },
+    ]},
+    { name: "Mountaintops of the Giants", items: [
+      { desc: "Atop a tower after defeating Commander Niall", replaces: "Haligtree Secret Medallion (Left)" },
+      { desc: "Dropped by Commander Niall in Castle Sol", replaces: "Veteran's Prosthesis" },
+      { desc: "At a statue in the First Church of Marika at Freezing Lake", replaces: "Sacred Tear" },
+      { desc: "Under a Golden Seed tree south from Freezing Lake Site of Grace", replaces: "Golden Seed" },
+      { desc: "Sold by the Hermit Merchant west of Stargazer's Ruins", replaces: null },
+    ]},
+    { name: "Flame Peak", items: [
+      { desc: "Dropped by Fire Giant", replaces: "Remembrance of the Fire Giant" },
+      { desc: "At the statue in Church of Repose, southwest Flame Peak", replaces: "Sacred Tear" },
+      { desc: "North of Foot of the Forge Site of Grace", replaces: "Golden Seed" },
+    ]},
+    { name: "Farum Azula", items: [
+      { desc: "Dropped by Godskin Duo", replaces: "Smithing-Stone Miner's Bell Bearing [4], Ash of War: Black Flame Tornado" },
+      { desc: "Dropped by Dragonlord Placidusax", replaces: "Remembrance of the Dragonlord" },
+      { desc: "Dropped by Maliketh, the Black Blade", replaces: "Remembrance of the Black Blade" },
+      { desc: "After using a Stonesword Key and ascending Dragon Temple Lift, past a fountain", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree guarded by four eagles near Dragon Temple Rooftop", replaces: "Golden Seed" },
+    ]},
+    { name: "Consecrated Snowfield", items: [
+      { desc: "Under a Golden Seed tree in Ordina, Liturgical Town", replaces: "Golden Seed" },
+      { desc: "Under a Golden Seed tree northeast of the Consecrated Snowfield Site of Grace", replaces: "Golden Seed" },
+    ]},
+    { name: "Haligtree", items: [
+      { desc: "Dropped by Loretta, Knight of the Haligtree", replaces: "Loretta's War Sickle, Loretta's Mastery" },
+      { desc: "Dropped by Malenia", replaces: "Malenia's Great Rune, Remembrance of the Rot Goddess" },
+    ]},
+    { name: "Mohgwyn", items: [
+      { desc: "Dropped by Mohg, Lord of Blood", replaces: "Mohg's Great Rune, Remembrance of the Blood Lord" },
+      { desc: "Under a Golden Seed tree in the lake of blood", replaces: "Golden Seed" },
+      { desc: "Sold by the Imprisoned Merchant before Dynasty Mausoleum Midpoint", replaces: null },
+    ]},
+    { name: "Ashen Leyndell", items: [
+      { desc: "Dropped by Hoarah Loux", replaces: "Remembrance of Hoarah Loux" },
+    ]},
+    { name: "Stone Platform", items: [
+      { desc: "Dropped by Elden Beast", replaces: "Elden Remembrance" },
+    ]},
+  ]},
+  { section: "Shadow of the Erdtree", locations: [
+    { name: "Gravesite Plain", items: [
+      { desc: "By Miquella's Cross at Main Gate Cross", replaces: "Scadutree Fragment" },
+      { desc: "By Miquella's Cross at the Pillar Path Cross grace", replaces: "Scadutree Fragment" },
+      { desc: "By Miquella's Cross at the Three-Path Cross", replaces: "Scadutree Fragment" },
+      { desc: "In front of a beheaded Marika statue in the Castle Front enemy camp", replaces: "Scadutree Fragment" },
+      { desc: "In front of the beheaded Marika statue in the Church of Consolation", replaces: "Scadutree Fragment 2x" },
+      { desc: "On a large withered corpse by the lake northeast of Prospect Town", replaces: "Revered Spirit Ash" },
+      { desc: "On a large withered corpse east of Scorched Ruins overlooking Church of Consolation", replaces: "Revered Spirit Ash" },
+      { desc: "On a large withered corpse on the east cliffside of Abandoned Ailing Village", replaces: "Revered Spirit Ash" },
+      { desc: "Sold by Moore", replaces: null },
+    ]},
+    { name: "Belurat", items: [
+      { desc: "On a corpse above the dirty waterfall (ladder west, loop counterclockwise, bridge east)", replaces: "Well Depths Key" },
+      { desc: "Dropped by Divine Beast Dancing Lion", replaces: "Remembrance of the Dancing Lion" },
+      { desc: "By Miquella's Cross (climb over rubble right of scorpion tower entrance)", replaces: "Scadutree Fragment" },
+      { desc: "On a large withered corpse on the way to Stagefront", replaces: "Revered Spirit Ash" },
+      { desc: "On the large withered statue in the scorpion room before Tower Settlement", replaces: "Revered Spirit Ash 2x" },
+      { desc: "On a large withered corpse up the elevator from Theatre of the Divine Beast", replaces: "Revered Spirit Ash" },
+    ]},
+    { name: "Ellac River", items: [
+      { desc: "On a large withered corpse north of the Ellac River Cave grace", replaces: "Revered Spirit Ash" },
+    ]},
+    { name: "Cerulean Coast", items: [
+      { desc: "By Miquella's Cross at the Cerulean Coast Cross grace", replaces: "Scadutree Fragment" },
+      { desc: "In a small cave along the ravine from Cerulean Coast West to the far west beach", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Castle Ensis", items: [
+      { desc: "In a chest on the southeast rampart tower, before the elevator to Castle-Lord's Chamber", replaces: "Imbued Sword Key" },
+      { desc: "Dropped by Rellana, Twin Moon Knight", replaces: "Remembrance of the Twin Moon Knight" },
+      { desc: "By Miquella's Cross at the Castle Ensis Checkpoint grace", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Scadu Altus", items: [
+      { desc: "Given by Count Ymir when you first meet him in Manus Metyr", replaces: "Hole-Laden Necklace, Ruins Map" },
+      { desc: "In front of the tree north of Bonny Village, cliffbottom east of Moorth Ruins", replaces: "O Mother" },
+      { desc: "By Miquella's Cross at the Highroad Cross grace", replaces: "Scadutree Fragment" },
+      { desc: "By Miquella's Cross at the Moorth Ruins grace", replaces: "Scadutree Fragment" },
+      { desc: "Beheaded Marika statue in the enemy camp west of Moorth Ruins", replaces: "Scadutree Fragment" },
+      { desc: "Beheaded Marika statue in the large enemy camp south of Shadow Keep", replaces: "Scadutree Fragment" },
+      { desc: "Beheaded Marika statue north of the small lake north of Moorth Ruins", replaces: "Scadutree Fragment" },
+      { desc: "In front of headless Marika statue in the Church of the Crusade", replaces: "Scadutree Fragment 2x" },
+      { desc: "On a large withered corpse at the north end of the Bonny Village gully", replaces: "Revered Spirit Ash" },
+      { desc: "On the large withered corpse along the cliffside east of Moorth Ruins", replaces: "Revered Spirit Ash" },
+      { desc: "By Miquella's Cross at the Scaduview Cross grace (sealed spiritspring below)", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Lower Scadu Altus", items: [
+      { desc: "At the bottom of the waterfall below Recluses' River Upstream grace", replaces: "Scadutree Fragment" },
+      { desc: "On a large withered corpse west of upper Village of Flies", replaces: "Revered Spirit Ash" },
+      { desc: "On the large withered corpse in southeast Castle Watering Hole", replaces: "Revered Spirit Ash" },
+    ]},
+    { name: "Shadow Keep — Church District", items: [
+      { desc: "On the left hand of the giant Marika statue in the cathedral (second floor)", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Shadow Keep", items: [
+      { desc: "Dropped by Golden Hippopotamus", replaces: "Aspects of the Crucible: Thorns, Scadutree Fragment 2x" },
+    ]},
+    { name: "Specimen Storehouse", items: [
+      { desc: "Dropped by Messmer the Impaler", replaces: "Remembrance of the Impaler, Messmer's Kindling" },
+      { desc: "By Miquella's Cross at the Storehouse Fourth Floor grace", replaces: "Scadutree Fragment" },
+      { desc: "Beheaded Marika statue right before the Dark Chamber Entrance", replaces: "Scadutree Fragment" },
+      { desc: "On top of a hanging beast (jump from seventh floor balcony)", replaces: "Revered Spirit Ash" },
+      { desc: "On top of the beast in front of the first floor grace (jump from wooden table)", replaces: "Revered Spirit Ash" },
+    ]},
+    { name: "Scadutree Base", items: [
+      { desc: "Dropped by Scadutree Avatar", replaces: "Remembrance of the Shadow Sunflower, Miquella's Great Rune" },
+    ]},
+    { name: "Stone Coffin Fissure", items: [
+      { desc: "Dropped by Putrescent Knight", replaces: "Remembrance of Putrescence" },
+      { desc: "By Miquella's Cross at the Fissure Cross grace", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Rauh Base", items: [
+      { desc: "On a walkway in Temple Town Ruins (enter broken wall south, climb north wall, jump left)", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Ancient Ruins of Rauh", items: [
+      { desc: "Dropped by Romina, Saint of the Bud", replaces: "Remembrance of the Saint of the Bud" },
+      { desc: "By Miquella's Cross at the East Ruins grace", replaces: "Scadutree Fragment" },
+      { desc: "Northwest wall monument, second floor cave after West Ruins grace", replaces: "Scadutree Fragment" },
+      { desc: "On a large withered corpse in the gazebo in the West Ruins second-story courtyard", replaces: "Revered Spirit Ash" },
+    ]},
+    { name: "Scaduview", items: [
+      { desc: "Dropped by Commander Gaius", replaces: "Remembrance of the Wild Boar Rider" },
+      { desc: "Beheaded Marika statue east of Shadow Keep Back Gate", replaces: "Scadutree Fragment" },
+      { desc: "In front of the Scadutree Chalice", replaces: "Scadutree Fragment x5" },
+    ]},
+    { name: "Abyssal Woods", items: [
+      { desc: "In front of the statue pedestal in Abandoned Church", replaces: "Scadutree Fragment 2x" },
+      { desc: "On a corpse in the ravine north of Abyssal Woods grace, by the west edge", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Midra's Manse", items: [
+      { desc: "Dropped by Midra, Lord of Frenzied Flame", replaces: "Remembrance of the Lord of Frenzied Flame" },
+      { desc: "On a corpse on a chandelier (jump north from Second Floor Chamber grace)", replaces: "Revered Spirit Ash" },
+    ]},
+    { name: "Jagged Peak", items: [
+      { desc: "Dropped by Bayle the Dread", replaces: "Heart of Bayle" },
+      { desc: "Under the boulder on the hill before Senessax's lake", replaces: "Scadutree Fragment" },
+    ]},
+    { name: "Finger Birthing Grounds", items: [
+      { desc: "Dropped by Metyr, Mother of Fingers", replaces: "Remembrance of the Mother of Fingers" },
+    ]},
+    { name: "Enir-Ilim", items: [
+      { desc: "Dropped by Promised Consort Radahn", replaces: "Remembrance of a God and a Lord" },
+      { desc: "By Miquella's Cross at the Spiral Rise grace", replaces: "Scadutree Fragment" },
+      { desc: "Altar in a side tower after Spiral Rise (up stairs from gravebird rooftop)", replaces: "Scadutree Fragment" },
+      { desc: "Altar in the Cleansing Chamber Anteroom", replaces: "Scadutree Fragment" },
+      { desc: "Large withered corpse in shrine (left doorway after gravebird rooftop)", replaces: "Revered Spirit Ash" },
+      { desc: "Large withered corpse near man-flies (stairs SW of First Rise, broken bridge NW)", replaces: "Revered Spirit Ash 2x" },
+      { desc: "Statue along the dropdown to Euporia in Belurat (from spiral column gazebo, descend NE, jump SE, drop to windowsill)", replaces: "Scadutree Fragment" },
+    ]},
+  ]},
+];
+
+// ---------------------------------------------------------------------------
+// Room & state management
+// ---------------------------------------------------------------------------
+const ROOM_KEY = 'elden-ring-tracker-room';
+
+function itemId(locName, idx) {
+  // Firebase keys cannot contain . $ # [ ] / — encode periods (e.g. "Mt. Gelmir")
+  return `${locName.replace(/\./g, '%2E')}::${idx}`;
+}
+
+let checkedState = {};
+let currentFilter = 'all';
+let currentRoom = null;
+let itemsRef = null;
+let firebaseListener = null;
+
+// Generates a random 6-character uppercase alphanumeric room code
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous 0/O, 1/I
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+// ---------------------------------------------------------------------------
+// Firebase sync
+// ---------------------------------------------------------------------------
+function joinRoom(code) {
+  // Detach any previous listener
+  if (firebaseListener && itemsRef) {
+    itemsRef.off('value', firebaseListener);
+  }
+
+  currentRoom = code.toUpperCase();
+  localStorage.setItem(ROOM_KEY, currentRoom);
+  itemsRef = db.ref('rooms/' + currentRoom + '/items');
+
+  // Listen for real-time changes
+  firebaseListener = itemsRef.on('value', (snapshot) => {
+    checkedState = snapshot.val() || {};
+    refreshUI();
+  });
+
+  // Show room badge, hide overlay
+  document.getElementById('roomOverlay').hidden = true;
+  document.getElementById('roomBadge').hidden = false;
+  document.getElementById('roomCodeDisplay').textContent = currentRoom;
+}
+
+function leaveRoom() {
+  if (firebaseListener && itemsRef) {
+    itemsRef.off('value', firebaseListener);
+  }
+  firebaseListener = null;
+  itemsRef = null;
+  currentRoom = null;
+  checkedState = {};
+  localStorage.removeItem(ROOM_KEY);
+
+  // Hide badge, show overlay
+  document.getElementById('roomBadge').hidden = true;
+  document.getElementById('roomOverlay').hidden = false;
+  document.getElementById('roomError').textContent = '';
+  document.getElementById('roomCodeInput').value = '';
+
+  refreshUI();
+}
+
+function setItemChecked(id, checked) {
+  if (!itemsRef) return;
+  if (checked) {
+    itemsRef.child(id).set(true);
+  } else {
+    itemsRef.child(id).remove();
+  }
+}
+
+function resetAllProgress() {
+  if (!itemsRef) return;
+  itemsRef.remove();
+}
+
+// ---------------------------------------------------------------------------
+// Progress
+// ---------------------------------------------------------------------------
+function getTotalAndChecked() {
+  let total = 0, done = 0;
+  DATA.forEach(s => s.locations.forEach(loc => {
+    loc.items.forEach((_, i) => {
+      total++;
+      if (checkedState[itemId(loc.name, i)]) done++;
+    });
+  }));
+  return { total, done };
+}
+
+function updateProgress() {
+  const { total, done } = getTotalAndChecked();
+  document.getElementById('progressCount').textContent = `${done} / ${total}`;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressPercent').textContent = `${pct}%`;
+  document.getElementById('progressFill').style.width = `${pct}%`;
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+
+// Full re-render of the item list (called once at startup, and on reset)
+function render() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  DATA.forEach(section => {
+    if (section.section) {
+      const divider = document.createElement('div');
+      divider.className = 'dlc-divider';
+      divider.innerHTML = `<h2>${section.section}</h2>`;
+      main.appendChild(divider);
+    }
+
+    section.locations.forEach(loc => {
+      const locDiv = document.createElement('div');
+      locDiv.className = 'location';
+      locDiv.dataset.name = loc.name.toLowerCase();
+
+      const locDone = loc.items.filter((_, i) => checkedState[itemId(loc.name, i)]).length;
+      if (locDone === loc.items.length) locDiv.classList.add('all-done');
+
+      const header = document.createElement('div');
+      header.className = 'location-header';
+      header.innerHTML = `
+        <h3>${loc.name}</h3>
+        <span class="location-count"><span class="done">${locDone}</span> / ${loc.items.length}</span>
+      `;
+      locDiv.appendChild(header);
+
+      const itemsDiv = document.createElement('div');
+      itemsDiv.className = 'items';
+      locDiv.appendChild(itemsDiv);
+
+      header.addEventListener('click', () => {
+        const collapsed = itemsDiv.dataset.collapsed === 'true';
+        itemsDiv.dataset.collapsed = collapsed ? 'false' : 'true';
+      });
+
+      loc.items.forEach((item, i) => {
+        const id = itemId(loc.name, i);
+        const isChecked = !!checkedState[id];
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item' + (isChecked ? ' checked' : '');
+        itemDiv.dataset.id = id;
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = isChecked;
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'item-text';
+        if (item.replaces) {
+          textSpan.innerHTML = `${item.desc}. <span class="item-replaces">\u2192 ${item.replaces}</span>`;
+        } else {
+          textSpan.textContent = item.desc;
+        }
+
+        itemDiv.appendChild(cb);
+        itemDiv.appendChild(textSpan);
+        itemsDiv.appendChild(itemDiv);
+
+        itemDiv.addEventListener('click', (e) => {
+          if (e.target === cb) return;
+          cb.checked = !cb.checked;
+          cb.dispatchEvent(new Event('change'));
+        });
+
+        cb.addEventListener('change', () => {
+          setItemChecked(id, cb.checked);
+        });
+      });
+
+      main.appendChild(locDiv);
+    });
+  });
+
+  // Reset button
+  const resetArea = document.createElement('div');
+  resetArea.className = 'reset-area';
+  resetArea.innerHTML = `<button class="reset-btn" id="resetBtn">Reset All Progress</button>`;
+  main.appendChild(resetArea);
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (confirm('Reset all progress? This will clear progress for everyone in this room and cannot be undone.')) {
+      resetAllProgress();
+    }
+  });
+
+  applyFilters();
+  updateProgress();
+}
+
+// Lightweight UI refresh — updates checkboxes, counts, and progress without rebuilding DOM
+function refreshUI() {
+  document.querySelectorAll('.location').forEach(locEl => {
+    let locDone = 0;
+    let locTotal = 0;
+
+    locEl.querySelectorAll('.item').forEach(itemEl => {
+      const id = itemEl.dataset.id;
+      const isChecked = !!checkedState[id];
+      locTotal++;
+      if (isChecked) locDone++;
+
+      const cb = itemEl.querySelector('input[type="checkbox"]');
+      if (cb.checked !== isChecked) cb.checked = isChecked;
+      if (isChecked) itemEl.classList.add('checked');
+      else itemEl.classList.remove('checked');
+    });
+
+    const countEl = locEl.querySelector('.done');
+    if (countEl) countEl.textContent = locDone;
+
+    if (locDone === locTotal) locEl.classList.add('all-done');
+    else locEl.classList.remove('all-done');
+  });
+
+  updateProgress();
+  applyFilters();
+}
+
+// ---------------------------------------------------------------------------
+// Filters
+// ---------------------------------------------------------------------------
+function applyFilters() {
+  const query = document.getElementById('searchBox').value.toLowerCase().trim();
+
+  document.querySelectorAll('.location').forEach(locEl => {
+    const locName = locEl.dataset.name;
+    let anyVisible = false;
+
+    locEl.querySelectorAll('.item').forEach(itemEl => {
+      const id = itemEl.dataset.id;
+      const isChecked = !!checkedState[id];
+      const text = itemEl.textContent.toLowerCase();
+      const matchesSearch = !query || text.includes(query) || locName.includes(query);
+      const matchesFilter = currentFilter === 'all' ||
+        (currentFilter === 'checked' && isChecked) ||
+        (currentFilter === 'unchecked' && !isChecked);
+
+      const visible = matchesSearch && matchesFilter;
+      itemEl.dataset.hidden = visible ? 'false' : 'true';
+      if (visible) anyVisible = true;
+    });
+
+    locEl.dataset.hidden = anyVisible ? 'false' : 'true';
+  });
+}
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+// Search
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+// ---------------------------------------------------------------------------
+// Room UI event handlers
+// ---------------------------------------------------------------------------
+document.getElementById('createRoomBtn').addEventListener('click', () => {
+  const code = generateRoomCode();
+  document.getElementById('roomError').textContent = '';
+  joinRoom(code);
+  render();
+});
+
+document.getElementById('joinRoomBtn').addEventListener('click', () => {
+  const input = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+  const errorEl = document.getElementById('roomError');
+  if (!input || input.length < 3) {
+    errorEl.textContent = 'Please enter a valid room code.';
+    return;
+  }
+  errorEl.textContent = '';
+  joinRoom(input);
+  render();
+});
+
+// Allow pressing Enter in the room code input to join
+document.getElementById('roomCodeInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('joinRoomBtn').click();
+});
+
+document.getElementById('leaveRoomBtn').addEventListener('click', () => {
+  leaveRoom();
+  render();
+});
+
+// ---------------------------------------------------------------------------
+// Init — render first, then auto-reconnect to saved room
+// ---------------------------------------------------------------------------
+render();
+
+const savedRoom = localStorage.getItem(ROOM_KEY);
+if (savedRoom) {
+  joinRoom(savedRoom);
+} else {
+  document.getElementById('roomOverlay').hidden = false;
+}
+</script>
+</body>
+</html>
