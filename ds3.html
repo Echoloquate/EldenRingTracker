@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dark Souls III — Item Tracker</title>
+<title>Dark Souls III - Item Tracker</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
 
@@ -592,7 +592,7 @@
     .progress-area { padding: 0.8rem 1rem; }
   }
 </style>
-<!-- Firebase SDK (compat builds for simplicity — no bundler needed) -->
+<!-- Firebase SDK (compat builds for simplicity - no bundler needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
@@ -669,7 +669,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // =============================================================================
-// DATA — parsed from raw item check text
+// DATA - parsed from raw item check text
 // =============================================================================
 const RAW_DATA = `--- Cemetery of Ash
 Major boss in Cemetery of Ash: Dropped by Iudex Gundyr. Replaces Coiled Sword.
@@ -1046,7 +1046,7 @@ const DATA = parseData(RAW_DATA);
 const ROOM_KEY = 'ds3-tracker-room';
 
 function itemId(locName, idx) {
-  // Firebase keys cannot contain . $ # [ ] / — encode periods
+  // Firebase keys cannot contain . $ # [ ] / - encode periods
   return `${locName.replace(/\./g, '%2E')}::${idx}`;
 }
 
