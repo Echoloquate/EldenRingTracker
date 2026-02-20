@@ -528,6 +528,61 @@
 
   .nav-link:hover { color: var(--ember); }
 
+  /* Info box */
+  .info-box {
+    max-width: 900px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .info-toggle:hover { color: var(--ember-dim); }
+
+  .info-toggle .arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 0.5rem;
+  }
+
+  .info-toggle.open .arrow { transform: rotate(180deg); }
+
+  .info-content {
+    display: none;
+    padding: 0 1.5rem 1rem;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .info-content.open { display: block; }
+
+  .info-content p { margin-bottom: 0.6rem; }
+
+  .info-content a {
+    color: var(--ember-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .info-content a:hover { color: var(--ember); }
+
   @media (max-width: 600px) {
     .controls { padding: 0.6rem 1rem; }
     main { padding: 0 1rem 3rem; }
@@ -544,6 +599,16 @@
   <h1>Dark Souls III<span>Item Tracker</span></h1>
   <a href="./" class="nav-link">&larr; Switch to Elden Ring Tracker</a>
 </header>
+
+<div class="info-box">
+  <button class="info-toggle" id="infoToggle">
+    About this tracker <span class="arrow">&#9660;</span>
+  </button>
+  <div class="info-content" id="infoContent">
+    <p>This is a checklist for the <a href="https://www.nexusmods.com/darksouls3/mods/361" target="_blank" rel="noopener">Dark Souls III Item Randomizer</a> by thefifthmatt. It covers all key items, boss souls, estus shards, undead bone shards, ashes, crystal lizards, ring locations, and shop checks across the base game, Ashes of Ariandel, and The Ringed City.</p>
+    <p>Create a room to share progress with your co-op group in real time - just give everyone the same room code and checks will sync automatically.</p>
+  </div>
+</div>
 
 <div class="progress-area">
   <div class="progress-stats">
@@ -1233,6 +1298,12 @@ function applyFilters() {
     locEl.dataset.hidden = anyVisible ? 'false' : 'true';
   });
 }
+
+// Info box toggle
+document.getElementById('infoToggle').addEventListener('click', () => {
+  document.getElementById('infoToggle').classList.toggle('open');
+  document.getElementById('infoContent').classList.toggle('open');
+});
 
 // Filter buttons
 document.querySelectorAll('.filter-btn').forEach(btn => {
