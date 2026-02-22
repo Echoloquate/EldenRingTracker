@@ -149,13 +149,13 @@
   }
 
   .filter-btn {
-    padding: 0.4rem 0.8rem;
+    padding: 0.45rem 0.9rem;
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 4px;
     color: var(--text-dim);
     font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
@@ -320,6 +320,7 @@
   /* Hidden by filter */
   .item[data-hidden="true"] { display: none; }
   .location[data-hidden="true"] { display: none; }
+  .dlc-divider[data-hidden="true"] { display: none; }
 
   /* Reset button */
   .reset-area {
@@ -618,7 +619,7 @@
 
   .category-toggles .cat-label {
     font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-dim);
@@ -626,13 +627,13 @@
   }
 
   .cat-btn {
-    padding: 0.3rem 0.6rem;
+    padding: 0.4rem 0.7rem;
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 12px;
     color: var(--text-dim);
     font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
@@ -641,6 +642,13 @@
 
   .cat-btn:hover { border-color: var(--gold-dim); color: var(--text); }
   .cat-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(200,168,78,0.08); }
+
+  .toggle-sep {
+    width: 1px;
+    height: 1.2rem;
+    background: var(--border-light);
+    margin: 0 0.3rem;
+  }
 
   @media (max-width: 600px) {
     .controls { padding: 0.6rem 1rem; }
@@ -735,6 +743,7 @@ const db = firebase.database();
 // ---------------------------------------------------------------------------
 const ROOM_KEY = 'elden-ring-tracker-room';
 const CAT_KEY = 'elden-ring-tracker-categories';
+const SEC_KEY = 'elden-ring-tracker-sections';
 
 function itemId(locName, idx) {
   return `${locName.replace(/\./g, '%2E')}::${idx}`;
@@ -753,19 +762,33 @@ let waitingForInitialData = false;
 const DEFAULT_CATEGORIES = CATEGORIES.map(c => c.id).filter(id => id !== 'boss');
 let enabledCategories = new Set(DEFAULT_CATEGORIES);
 
-// Load saved category state from localStorage
-(function loadCategoryState() {
-  const saved = localStorage.getItem(CAT_KEY);
-  if (saved) {
+// Section toggle state — 'base' and/or 'dlc'
+let enabledSections = new Set(['base', 'dlc']);
+
+// Load saved state from localStorage
+(function loadSavedState() {
+  const savedCat = localStorage.getItem(CAT_KEY);
+  if (savedCat) {
     try {
-      const arr = JSON.parse(saved);
+      const arr = JSON.parse(savedCat);
       if (Array.isArray(arr)) enabledCategories = new Set(arr);
+    } catch (e) {}
+  }
+  const savedSec = localStorage.getItem(SEC_KEY);
+  if (savedSec) {
+    try {
+      const arr = JSON.parse(savedSec);
+      if (Array.isArray(arr)) enabledSections = new Set(arr);
     } catch (e) {}
   }
 })();
 
 function saveCategoryState() {
   localStorage.setItem(CAT_KEY, JSON.stringify([...enabledCategories]));
+}
+
+function saveSectionState() {
+  localStorage.setItem(SEC_KEY, JSON.stringify([...enabledSections]));
 }
 
 function syncCategoriesToFirebase() {
@@ -775,6 +798,13 @@ function syncCategoriesToFirebase() {
 function updateCategoryButtons() {
   document.querySelectorAll('.cat-btn').forEach(btn => {
     if (enabledCategories.has(btn.dataset.cat)) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+}
+
+function updateSectionButtons() {
+  document.querySelectorAll('.sec-btn').forEach(btn => {
+    if (enabledSections.has(btn.dataset.sec)) btn.classList.add('active');
     else btn.classList.remove('active');
   });
 }
@@ -888,17 +918,22 @@ function resetAllProgress() {
 }
 
 // ---------------------------------------------------------------------------
-// Progress - only counts items whose category is enabled
+// Progress — only counts items whose category and section are enabled
 // ---------------------------------------------------------------------------
+function sectionKey(s) { return s.section ? 'dlc' : 'base'; }
+
 function getTotalAndChecked() {
   let total = 0, done = 0;
-  DATA.forEach(s => s.locations.forEach(loc => {
-    loc.items.forEach((item, i) => {
-      if (!enabledCategories.has(item.cat)) return;
-      total++;
-      if (checkedState[itemId(loc.name, i)]) done++;
+  DATA.forEach(s => {
+    if (!enabledSections.has(sectionKey(s))) return;
+    s.locations.forEach(loc => {
+      loc.items.forEach((item, i) => {
+        if (!enabledCategories.has(item.cat)) return;
+        total++;
+        if (checkedState[itemId(loc.name, i)]) done++;
+      });
     });
-  }));
+  });
   return { total, done };
 }
 
@@ -915,8 +950,8 @@ function updateProgress() {
 // ---------------------------------------------------------------------------
 function renderCategoryToggles() {
   const container = document.getElementById('categoryToggles');
-  // Keep the label, clear any existing buttons
-  container.querySelectorAll('.cat-btn').forEach(b => b.remove());
+  // Keep the label, clear dynamic elements
+  container.querySelectorAll('.cat-btn, .sec-btn, .toggle-sep').forEach(b => b.remove());
 
   CATEGORIES.forEach(cat => {
     const btn = document.createElement('button');
@@ -938,6 +973,31 @@ function renderCategoryToggles() {
     });
     container.appendChild(btn);
   });
+
+  // Separator + section toggles
+  const sep = document.createElement('div');
+  sep.className = 'toggle-sep';
+  container.appendChild(sep);
+
+  [{ id: 'base', label: 'Base Game' }, { id: 'dlc', label: 'DLC' }].forEach(sec => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn sec-btn' + (enabledSections.has(sec.id) ? ' active' : '');
+    btn.dataset.sec = sec.id;
+    btn.textContent = sec.label;
+    btn.addEventListener('click', () => {
+      if (enabledSections.has(sec.id)) {
+        enabledSections.delete(sec.id);
+        btn.classList.remove('active');
+      } else {
+        enabledSections.add(sec.id);
+        btn.classList.add('active');
+      }
+      saveSectionState();
+      applyFilters();
+      updateProgress();
+    });
+    container.appendChild(btn);
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -948,9 +1008,12 @@ function render() {
   main.innerHTML = '';
 
   DATA.forEach(section => {
+    const secKey = section.section ? 'dlc' : 'base';
+
     if (section.section) {
       const divider = document.createElement('div');
       divider.className = 'dlc-divider';
+      divider.dataset.section = secKey;
       divider.innerHTML = `<h2>${section.section}</h2>`;
       main.appendChild(divider);
     }
@@ -959,6 +1022,7 @@ function render() {
       const locDiv = document.createElement('div');
       locDiv.className = 'location';
       locDiv.dataset.name = loc.name.toLowerCase();
+      locDiv.dataset.section = secKey;
 
       const header = document.createElement('div');
       header.className = 'location-header';
@@ -1057,8 +1121,14 @@ function refreshUI() {
 function applyFilters() {
   const query = document.getElementById('searchBox').value.toLowerCase().trim();
 
+  // Hide/show DLC divider based on section toggle
+  document.querySelectorAll('.dlc-divider').forEach(d => {
+    d.dataset.hidden = enabledSections.has(d.dataset.section) ? 'false' : 'true';
+  });
+
   document.querySelectorAll('.location').forEach(locEl => {
     const locName = locEl.dataset.name;
+    const sectionEnabled = enabledSections.has(locEl.dataset.section);
     let anyVisible = false;
     let locDone = 0;
     let locTotal = 0;
@@ -1080,7 +1150,7 @@ function applyFilters() {
         (currentFilter === 'checked' && isChecked) ||
         (currentFilter === 'unchecked' && !isChecked);
 
-      const visible = catEnabled && matchesSearch && matchesFilter;
+      const visible = sectionEnabled && catEnabled && matchesSearch && matchesFilter;
       itemEl.dataset.hidden = visible ? 'false' : 'true';
       if (visible) anyVisible = true;
     });
