@@ -8,21 +8,21 @@
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
 
   :root {
-    --gold: #c8a84e;
-    --gold-dim: #8a7235;
-    --gold-bright: #e8cc6a;
-    --bg: #0d0c0a;
-    --bg-card: #16140f;
-    --bg-card-hover: #1d1a13;
-    --border: #2a2518;
-    --border-light: #3d3525;
-    --text: #c4b99a;
-    --text-dim: #7a7060;
-    --text-bright: #e8dcc4;
-    --checked-text: #4a4438;
-    --green: #5a8a4a;
-    --green-dim: #3a5a2a;
-    --red: #8a3a3a;
+    --gold: #d4b55a;
+    --gold-dim: #a08540;
+    --gold-bright: #f0d878;
+    --bg: #1a1814;
+    --bg-card: #22201a;
+    --bg-card-hover: #2c2920;
+    --border: #3a3428;
+    --border-light: #504838;
+    --text: #d8ccb0;
+    --text-dim: #9a8e78;
+    --text-bright: #f0e8d4;
+    --checked-text: #605848;
+    --green: #6a9a5a;
+    --green-dim: #4a7a3a;
+    --red: #a04a4a;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -743,7 +743,7 @@ const db = firebase.database();
 // ---------------------------------------------------------------------------
 const ROOM_KEY = 'elden-ring-tracker-room';
 const CAT_KEY = 'elden-ring-tracker-categories';
-const SEC_KEY = 'elden-ring-tracker-sections';
+
 
 function itemId(locName, idx) {
   return `${locName.replace(/\./g, '%2E')}::${idx}`;
@@ -774,22 +774,13 @@ let enabledSections = new Set(['base', 'dlc']);
       if (Array.isArray(arr)) enabledCategories = new Set(arr);
     } catch (e) {}
   }
-  const savedSec = localStorage.getItem(SEC_KEY);
-  if (savedSec) {
-    try {
-      const arr = JSON.parse(savedSec);
-      if (Array.isArray(arr)) enabledSections = new Set(arr);
-    } catch (e) {}
-  }
+
 })();
 
 function saveCategoryState() {
   localStorage.setItem(CAT_KEY, JSON.stringify([...enabledCategories]));
 }
 
-function saveSectionState() {
-  localStorage.setItem(SEC_KEY, JSON.stringify([...enabledSections]));
-}
 
 function syncCategoriesToFirebase() {
   if (categoriesRef) categoriesRef.set([...enabledCategories]);
@@ -992,7 +983,6 @@ function renderCategoryToggles() {
         enabledSections.add(sec.id);
         btn.classList.add('active');
       }
-      saveSectionState();
       applyFilters();
       updateProgress();
     });
