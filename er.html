@@ -820,6 +820,9 @@ function joinRoom(code) {
 
   currentRoom = code.toUpperCase();
   localStorage.setItem(ROOM_KEY, currentRoom);
+  const url = new URL(location);
+  url.searchParams.set('room', currentRoom);
+  history.replaceState(null, '', url);
   itemsRef = db.ref('rooms/' + currentRoom + '/items');
   categoriesRef = db.ref('rooms/' + currentRoom + '/categories');
 
@@ -875,6 +878,9 @@ function leaveRoom() {
   currentRoom = null;
   checkedState = {};
   localStorage.removeItem(ROOM_KEY);
+  const url = new URL(location);
+  url.searchParams.delete('room');
+  history.replaceState(null, '', url);
 
   document.getElementById('roomBadge').hidden = true;
   document.getElementById('roomOverlay').hidden = false;
@@ -1213,7 +1219,8 @@ document.getElementById('leaveRoomBtn').addEventListener('click', () => {
 // ---------------------------------------------------------------------------
 renderCategoryToggles();
 
-const savedRoom = localStorage.getItem(ROOM_KEY);
+const urlRoom = new URLSearchParams(location.search).get('room');
+const savedRoom = urlRoom ? urlRoom.trim().toUpperCase() : localStorage.getItem(ROOM_KEY);
 if (savedRoom) {
   // Delay render until first Firebase snapshot — spinner stays visible
   waitingForInitialData = true;
