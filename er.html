@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elden Ring - Item Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap">
 <link rel="stylesheet" href="shared.css">
 <style>
   :root {
@@ -47,6 +50,7 @@
   </div>
 </div>
 
+<div class="toolbar">
 <div class="category-toggles" id="categoryToggles">
   <span class="cat-label">Categories</span>
 </div>
@@ -66,10 +70,15 @@
   <button class="filter-btn active" data-filter="all">All</button>
   <button class="filter-btn" data-filter="unchecked">Remaining</button>
   <button class="filter-btn" data-filter="checked">Completed</button>
+  <button class="filter-btn" id="collapseAllBtn">Collapse</button>
+  <button class="filter-btn" id="expandAllBtn">Expand</button>
+  <button class="filter-btn" id="jumpNextBtn">Next &#x25BC;</button>
+  <button class="filter-btn" id="undoBtn" disabled>Undo</button>
   <span class="room-badge" id="roomBadge" hidden>
     Room <code id="roomCodeDisplay"></code>
     <button class="leave-btn" id="leaveRoomBtn">Leave</button>
   </span>
+</div>
 </div>
 <div class="sync-error" id="syncError" hidden></div>
 

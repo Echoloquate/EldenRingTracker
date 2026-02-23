@@ -157,19 +157,43 @@ function showSyncError(msg) {
   el.hidden = false;
 }
 
-function setItemChecked(id, checked) {
-  if (checked) checkedState[id] = true;
-  else delete checkedState[id];
+const undoStack = [];
+const UNDO_MAX = 50;
+
+function updateUndoBtn() {
+  document.getElementById('undoBtn').disabled = undoStack.length === 0;
+}
+
+function batchSetItems(changes, record) {
+  if (record) {
+    undoStack.push({ items: changes.map(c => ({ id: c.id, wasChecked: !!checkedState[c.id] })) });
+    if (undoStack.length > UNDO_MAX) undoStack.shift();
+    updateUndoBtn();
+  }
+
+  const fbUpdate = {};
+  for (const { id, checked } of changes) {
+    if (checked) checkedState[id] = true;
+    else delete checkedState[id];
+    if (itemsRef) fbUpdate[id] = checked ? true : null;
+  }
   refreshUI();
 
-  if (!itemsRef) return;
-  const op = checked ? itemsRef.child(id).set(true) : itemsRef.child(id).remove();
-  op.catch(() => showSyncError('Failed to sync - check Firebase database rules (must allow read/write).'));
+  if (itemsRef && Object.keys(fbUpdate).length) {
+    itemsRef.update(fbUpdate)
+      .catch(() => showSyncError('Failed to sync - check Firebase database rules (must allow read/write).'));
+  }
+}
+
+function setItemChecked(id, checked) {
+  batchSetItems([{ id, checked }], true);
 }
 
 function resetAllProgress() {
   if (!itemsRef) return;
   checkedState = {};
+  undoStack.length = 0;
+  updateUndoBtn();
   refreshUI();
   itemsRef.remove()
     .catch(() => showSyncError('Failed to reset - check Firebase database rules.'));
@@ -285,6 +309,15 @@ function render() {
       header.addEventListener('click', () => {
         const collapsed = itemsDiv.dataset.collapsed === 'true';
         itemsDiv.dataset.collapsed = collapsed ? 'false' : 'true';
+      });
+
+      header.querySelector('.location-count').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const visible = [...itemsDiv.querySelectorAll('.item:not([data-hidden="true"])')];
+        if (!visible.length) return;
+        const allChecked = visible.every(el => el.classList.contains('checked'));
+        const changes = visible.map(el => ({ id: el.dataset.id, checked: !allChecked }));
+        batchSetItems(changes, true);
       });
 
       loc.items.forEach((item, i) => {
@@ -412,9 +445,9 @@ document.getElementById('infoToggle').addEventListener('click', () => {
   document.getElementById('infoContent').classList.toggle('open');
 });
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
     applyFilters();
@@ -422,6 +455,29 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+document.getElementById('collapseAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('.items').forEach(el => el.dataset.collapsed = 'true');
+});
+
+document.getElementById('expandAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('.items').forEach(el => el.dataset.collapsed = 'false');
+});
+
+document.getElementById('jumpNextBtn').addEventListener('click', () => {
+  const next = document.querySelector('.item:not(.checked):not([data-hidden="true"])');
+  if (!next) return;
+  const items = next.closest('.items');
+  if (items) items.dataset.collapsed = 'false';
+  next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+document.getElementById('undoBtn').addEventListener('click', () => {
+  if (!undoStack.length) return;
+  const entry = undoStack.pop();
+  updateUndoBtn();
+  batchSetItems(entry.items.map(i => ({ id: i.id, checked: i.wasChecked })), false);
+});
 
 document.getElementById('createRoomBtn').addEventListener('click', () => {
   const code = generateRoomCode();

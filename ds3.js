@@ -11,376 +11,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const RAW_DATA = `--- Cemetery of Ash
-Major boss in Cemetery of Ash: Dropped by Iudex Gundyr. Replaces Coiled Sword.
-Powerful enemy in Cemetery of Ash: Dropped by Ravenous Crystal Lizard. Replaces Titanite Scale.
-
---- Firelink Shrine
-Key item in Firelink Shrine: Sold by both Shrine Handmaid and Untended Graves Handmaid
-Shop in Firelink Shrine: Sold by Cornyx after recruiting him, or in his ashes
-Shop in Firelink Shrine: Sold by Greirat after recruiting him, or in his ashes
-Shop in Firelink Shrine: Sold by Handmaid
-Shop in Firelink Shrine: Sold by Handmaid after defeating Abyss Watchers
-Shop in Firelink Shrine: Sold by Handmaid after defeating Alrich, Devourer of Gods
-Shop in Firelink Shrine: Sold by Handmaid after defeating Champion Gundyr
-Shop in Firelink Shrine: Sold by Handmaid after defeating Crystal Sage
-Shop in Firelink Shrine: Sold by Handmaid after defeating Dancer of the Boreal Valley
-Shop in Firelink Shrine: Sold by Handmaid after defeating High Lord Wolnir
-Shop in Firelink Shrine: Sold by Handmaid after defeating Lothric, Younger Prince
-Shop in Firelink Shrine: Sold by Handmaid after defeating Nameless King
-Shop in Firelink Shrine: Sold by Handmaid after defeating Sister Friede
-Shop in Firelink Shrine: Sold by Handmaid after defeating Soul of Cinder
-Shop in Firelink Shrine: Sold by Handmaid after giving Captain's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Dragon Chaser's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Dreamchaser's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Easterner's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Grave Warden's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Mortician's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Paladin's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Prisoner Chief's Ashes
-Shop in Firelink Shrine: Sold by Handmaid after giving Xanthous Ashes
-Shop in Firelink Shrine: Sold by Handmaid after placing all Cinders of a Lord on their thrones
-Shop in Firelink Shrine: Sold by Irina after recruiting her, or in her ashes
-Shop in Firelink Shrine: Sold by Karla after recruiting her, or in her ashes
-Powerful enemy in Firelink Shrine: Dropped by Sword Master. Replaces Uchigatana.
-
---- Firelink Shrine Roof
-Flask upgrade in Firelink Shrine Roof: In the Firelink Shrine rafters, accessible from the roof. Replaces Estus Shard.
-Chest + Ring in Firelink Shrine Roof: From the Firelink Shrine roof, past the rafters and an illusory wall. Replaces Covetous Silver Serpent Ring.
-Small crystal lizard in Firelink Shrine Roof: Dropped by the Crystal Lizard behind Firelink Shrine. Can be accessed with tree jump by going all the way around the roof, left of the entrance to the rafters, or alternatively dropping down from the Bell Tower. Replaces Twinkling Titanite.
-
---- Firelink Bell Tower
-Key item in Firelink Bell Tower: At the top of the Bell Tower. Replaces Fire Keeper Soul.
-Ring in Firelink Bell Tower: Dropping down from the Bell Tower to where Irina eventually resides. Replaces Estus Ring.
-
---- High Wall
-Key item in High Wall: Dropped by Emma upon killing her. This is possible to do at any time. Replaces Basin of Vows.
-Key item in High Wall: Given by Emma, or dropped upon death. Replaces Small Lothric Banner.
-Key item in High Wall: In the basement of the building with Pus of Man on the roof, down the stairs guarded by a dog. Replaces Cell Key.
-Major boss in High Wall: Dropped by Vordt of the Boreal Valley. Replaces Soul of Boreal Valley Vordt.
-Flask upgrade in High Wall: In the basement of the building with the Pus of Man on the roof, on the blacksmith anvil. Replaces Estus Shard.
-Chest in High Wall: In the building with the Pus of Man on the roof, past the Lothric Knight down a hallway obscured by a wooden wheel, dropping down past the edge. Replaces Astora Straight Sword.
-Chest in High Wall: In the chest on the balcony overlooking the basement of the building with the Pus of Man on the roof. Replaces Silver Eagle Kite Shield.
-Powerful enemy in High Wall: Dropped by mimic in the building guarded by the fire-breathing wyvern. Replaces Deep Battle Axe.
-Small crystal lizard in High Wall: Dropped by the Crystal Lizard on the rooftop after the Tower on the Wall bonfire. Replaces Raw Gem.
-Ring in High Wall: Coming from the elevator shortcut, on a side path to the left (toward Winged Knight area), jumping onto a wooden support. Replaces Ring of Sacrifice.
-
---- High Wall Lift Cell
-Powerful enemy in High Wall Lift Cell: Dropped by the Darkwraith past the Lift Chamber Key. Replaces Red Eye Orb.
-
---- Undead Settlement
-Major boss in Undead Settlement: Dropped by Curse Rotted Greatwood. Replaces Soul of the Rotted Greatwood, Transposing Kiln.
-Flask upgrade in Undead Settlement: In front of the burning tree guarded by the Cathedral Evangelist. Replaces Estus Shard.
-Flask upgrade in Undead Settlement: In the area past the Dilapidated Bridge bonfire, where the Giant is shooting arrows, jumping to the floating platform on the right. Replaces Undead Bone Shard.
-Chest in Undead Settlement: In a chest after Fire Demon. Cage Spiders activate open opening it. Replaces Human Pine Resin 4x.
-Ashes in Undead Settlement: In the area past the Dilapidated Bridge bonfire, where the Giant is shooting arrows, at the close end of the graveyard. Replaces Mortician's Ashes.
-Powerful enemy in Undead Settlement: Dropped by the Boreal Outright Knight before Road of Sacrifices. Replaces Irithyll Straight Sword.
-Powerful enemy in Undead Settlement: Dropped by the Fire Demon you fight with Siegward. Replaces Fire Gem.
-Small crystal lizard in Undead Settlement: Drop by Crystal Lizard in ravine accessible by Grave Key or dropping down near Eygon. Replaces Heavy Gem.
-Small crystal lizard in Undead Settlement: Drop by Crystal Lizard near Dilapidated Bridge bonfire. Replaces Sharp Gem.
-Ring in Undead Settlement: At the end of the Fire Demon loop, in the tower where you have to drop down after the roof. Replaces Chloranthy Ring.
-Ring in Undead Settlement: Dropped by the large rat in the sewers with grave access. Replaces Bloodbite Ring.
-Ring in Undead Settlement: From the area bombarded by firebombs above the Cliff Underside bonfire. Replaces Fire Clutch Ring.
-Ring in Undead Settlement: On a hanging corpse in the area with the Pit of Hollows cage manservant, after the thrall area, overlooking the entrance to the Giant's tower. Replaces Flame Stoneplate Ring.
-Ring in Undead Settlement: On the roof toward the end of the Fire Demon loop, past the Cathedral Evangelists. Replaces Flynn's Ring.
-
---- Road of Sacrifices
-Key item in Road of Sacrifices: At the end of the Farron Keep Perimeter building on Crucifixion Woods side, behind the Black Knight. Replaces Farron Coal.
-Major boss in Road of Sacrifices: Dropped by Crystal Sage. Replaces Soul of a Crystal Sage.
-Flask upgrade in Road of Sacrifices: Behind the building leading to Crystal Sage, approached from Crucifixion Woods bonfire. Can drop down on left side of go under bridge on right side. Replaces Estus Shard.
-Powerful enemy in Road of Sacrifices: Dropped by the club-wielding Exile Knight before the ladder down to Farron Keep. Replaces Great Club.
-Powerful enemy in Road of Sacrifices: Dropped by the greatsword-wielding Exile Knight before the ladder down to Farron Keep. Replaces Exile Greatsword.
-Small crystal lizard in Road of Sacrifices: Dropped by the Crystal Lizard in the building before Crystal Sage. Replaces Crystal Gem.
-Ring in Road of Sacrifices: Drop down from the platform behind the sorcerer in the building before Crystal Sage, entering from the stairs leading up from the crab area. Replaces Ring of Sacrifice.
-Ring in Road of Sacrifices: Dropped by Greater Crab in Crucifixion Woods close to the Farron Keep outer wall. Replaces Great Swamp Ring.
-Ring in Road of Sacrifices: Dropping down before the bridge leading up to Halfway Fortress from Road of Sacrifices, guarded by the maggot belly dog. Replaces Morne's Ring.
-Ring in Road of Sacrifices: In an alcove under the building before Crystal Sage, guarded by a Lycanthrope, accessible from the swamp or from dropping down. Replaces Sage Ring.
-
---- Farron Keep
-Key item in Farron Keep: In the pavillion guarded by a Darkwraith, straight ahead from the Farron Keep bonfire to the left of the ritual fire stairs. Replaces Sage's Coal.
-Major boss in Farron Keep: Dropped by Abyss Watchers. Replaces Soul of the Blood of the Wolf, Cinders of a Lord (Abyss Watchers).
-Flask upgrade in Farron Keep: In a standalone pavillion down the ramp from Keep Ruins bonfire and to the right. Replaces Undead Bone Shard.
-Flask upgrade in Farron Keep: Straight ahead from the Farron Keep bonfire to the ritual fire stairs, guarded by a slug. Replaces Estus Shard.
-Chest in Farron Keep: In a chest in the cave found along the keep wall in the basilisk area, with the Elizabeth corpse. Replaces Antiquated Dress.
-Ashes in Farron Keep: Near the Old Wolf of Farron bonfire, behind an illusory wall near the Crystal Lizard. Replaces Dreamchaser's Ashes.
-Powerful enemy in Farron Keep: Dropped by Ravenous Crystal Lizard near the shortcut from Farron Keep back to Road of Sacrifices. Replaces Titanite Scale 2x.
-Powerful enemy in Farron Keep: Dropped by Stray Demon on the bridge above Farron Keep. Replaces Soul of a Stray Demon.
-Small crystal lizard in Farron Keep: Dropped by the closer Crystal Lizard in the area dropping down from near Stray Demon, up from Old Wolf of Farron bonfire. Replaces Large Titanite Shard.
-Small crystal lizard in Farron Keep: Dropped by the Crystal Lizard on the balcony behind the Old Wolf of Farron bonfire. Replaces Twinkling Titanite.
-Small crystal lizard in Farron Keep: Dropped by the Crystal Lizard that scurries up the stairs in the area dropping down from near Stray Demon, up from Old Wolf of Farron bonfire. Replaces Heavy Gem.
-Small crystal lizard in Farron Keep: Dropped by the farther Crystal Lizard in the area dropping down from near Stray Demon, up from Old Wolf of Farron bonfire. Replaces Large Titanite Shard.
-Ring in Farron Keep: Dropped by the Greater Crab patrolling the birch tree where the Giant shoots arrows. Replaces Lingering Dragoncrest Ring.
-
---- Cathedral of the Deep
-Major boss in Cathedral of the Deep: Dropped by Deacons of the Deep. Replaces Soul of the Deacons of the Deep, Small Doll.
-Flask upgrade in Cathedral of the Deep: In the graveyard with the Infested Corpses, on a coffin partly hanging off of the ledge. Replaces Undead Bone Shard.
-Flask upgrade in Cathedral of the Deep: Right outside of the Cleansing Chapel. Requires killing praying hollows. Replaces Estus Shard.
-Ashes in Cathedral of the Deep: At the very start of the area, guarded by the Fallen Knight. Replaces Paladin's Ashes.
-Powerful enemy in Cathedral of the Deep: Dropped by the brigand at the start of Cathedral of the Deep. Replaces Spider Shield.
-Powerful enemy in Cathedral of the Deep: Dropped by the Mimic before the room with the patrolling Cathedral Knight and Deep Accursed. Replaces Deep Braille Divine Tome.
-Powerful enemy in Cathedral of the Deep: Dropped by the Ravenous Crystal Lizard outside of the Cathedral. Replaces Titanite Scale.
-Small crystal lizard in Cathedral of the Deep: Dropped by the Crystal Lizard behind the cathedral near the Infested Corpse moat, going from the Ravenous Crystal Lizard. Replaces Twinkling Titanite.
-Small crystal lizard in Cathedral of the Deep: Dropped by the Crystal Lizard under the cathedral near the Infested Corpse moat, going from the Ravenous Crystal Lizard. Replaces Twinkling Titanite.
-Small crystal lizard in Cathedral of the Deep: Dropped by the first Crystal Lizard after the Crystal Sage fight. Replaces Twinkling Titanite.
-Small crystal lizard in Cathedral of the Deep: Dropped by the second Crystal Lizard after the Crystal Sage fight. Replaces Twinkling Titanite.
-Ring in Cathedral of the Deep: In the pit with the Infested Corpse, accessible from the Ravenous Crystal Lizard area or from dropping down near the second Cleansing Chapel shortcut. Replaces Poisonbite Ring.
-Ring in Cathedral of the Deep: On the ledge where the Giant Slave slams his arms down. Replaces Lloyd's Sword Ring.
-
---- Catacombs of Carthus
-Major boss in Catacombs of Carthus: Dropped by High Lord Wolnir. Replaces Soul of High Lord Wolnir.
-Flask upgrade in Catacombs of Carthus: Dropped by first Skeleton Ball after killing its sorcerer skeleton. Replaces Undead Bone Shard.
-Ashes in Catacombs of Carthus: From the Catacombs bonfire, down the stairs into the main hall and up the stairs to the other side, on the far left side. Stairwell past the illusory wall is most direct. Replaces Grave Warden's Ashes.
-Powerful enemy in Catacombs of Carthus: Dropped by killing Sulyvahn's Beast on the bridge to Irithyll or in the lake below. Replaces Pontiff's Right Eye.
-Powerful enemy in Catacombs of Carthus: Dropped by the Fire Demon before Smouldering Lake. Replaces Soul of a Demon.
-Powerful enemy in Catacombs of Carthus: Dropped by the mimic before Smouldering Lake. Replaces Black Blade.
-Small crystal lizard in Catacombs of Carthus: Dropped by a Crystal Lizard found between the Catacombs main halls and the ledge overlooking the bridge you can cut down. Replaces Fire Gem.
-Small crystal lizard in Catacombs of Carthus: Dropped by a Crystal Lizard found to the left before going down the main stairwell in the Catacombs, past the skeleton ambush and past where Anri is standing. Replaces Twinkling Titanite.
-Ring in Catacombs of Carthus: After the first Skeleton Ball, in the hallway alcove with the many dark-exploding pots. Replaces Carthus Milkring.
-Ring in Catacombs of Carthus: At the very end of the Bonewheel Skeleton area. Replaces Carthus Bloodring.
-Ring in Catacombs of Carthus: Down the ramp from the Fire Demon, straight down the hallway past the room with the Abandoned Tomb bonfire. Replaces Old Sage's Blindfold.
-
---- Smouldering Lake
-Major boss in Smouldering Lake: Dropped by Old Demon King in Smouldering Lake. Replaces Soul of the Old Demon King.
-Flask upgrade + Powerful enemy in Smouldering Lake: Dropped by the giant Carthus Sandworm. Replaces Lightning Stake, Undead Bone Shard.
-Flask upgrade in Smouldering Lake: Behind an illusory wall and Smouldering Writhing Flesh-filled corridor from Antechamber bonfire. Replaces Estus Shard.
-Flask upgrade in Smouldering Lake: In the close end of the Demon Ruins main hall, right below a Smouldering Writhing Flesh. Replaces Undead Bone Shard.
-Chest in Smouldering Lake: In a chest past an illusory wall to the left of the Large Hound Rat in Demon Ruins, before the basilisk area. Replaces Large Titanite Shard 3x.
-Powerful enemy in Smouldering Lake: Dropped by Knight Slayer Tsorig in Smouldering Lake. Replaces Fume Ultra Greatsword.
-Small crystal lizard in Smouldering Lake: Dropped by the Crystal Lizard found from the Antechamber bonfire, toward the Demon Cleric and to the right, then all the way down. Replaces Chaos Gem.
-Small crystal lizard in Smouldering Lake: Dropped by the first Crystal Lizard in the cave leading to the pit where Horace can be found in Smouldering Lake. Replaces Twinkling Titanite.
-Small crystal lizard in Smouldering Lake: Dropped by the second Crystal Lizard in the cave leading to the pit where Horace can be found in Smouldering Lake. Replaces Titanite Chunk.
-
---- Irithyll
-Key item in Irithyll: On the Giant Blacksmith's corpse in Anor Londo. Replaces Giant's Coal.
-Major boss in Irithyll: Dropped by Aldrich. Replaces Soul of Aldrich, Cinders of a Lord (Aldrich).
-Major boss in Irithyll: Dropped by Pontiff Sulyvahn. Replaces Soul of Pontiff Sulyvahn.
-Flask upgrade in Irithyll: In the graveyard down the stairs from the Church of Yorshka, behind the grave with the Corvian. Replaces Undead Bone Shard.
-Chest + Ring in Irithyll: In a chest in Darkmoon Tomb. Replaces Reversal Ring.
-Chest + Ring in Irithyll: In a chest up the stairs in the room with the Silver Knight staring at the painting. Replaces Leo Ring.
-Chest in Irithyll: In a chest in the rafters of the dark area with the Irithyllian slaves. Replaces Yorshka's Spear.
-Chest in Irithyll: In a chest up the stairs in the room with the Silver Knight staring at the painting. Replaces Divine Blessing, Smough's Great Hammer.
-Flask upgrade + Chest in Irithyll: In a chest on the floor of the Anor Londo cathedral. Replaces Estus Shard.
-Ashes in Irithyll: Dropping down from the rightmost flying buttress, or the rightmost set of stairs. Replaces Easterner's Ashes.
-Ashes in Irithyll: In the area with the sewer centipedes, before going up the stairs to the kitchen. Replaces Excrement-covered Ashes.
-Powerful enemy in Irithyll: Drop from a mimic in the higher levels of Pontiff's cathedral, accessible from the Deacons after the Pontiff fight. Replaces Golden Ritual Spear.
-Powerful enemy in Irithyll: Dropped after killing both of Sulyvahn's Beasts in the Water Reserves. Replaces Ring of Favor.
-Small crystal lizard in Irithyll: Dropped a Crystal Lizard straight after the Pontif fight. Replaces Twinkling Titanite.
-Small crystal lizard in Irithyll: Dropped by a Crystal Lizard behind an illusory wall before going down the stairs to the lake leading to the Distant Manor bonfire. Replaces Twinkling Titanite.
-Small crystal lizard in Irithyll: Dropped by a Crystal Lizard in the higher levels of Pontiff's cathedral, accessible from the Deacons after the Pontiff fight. Replaces Simple Gem.
-Small crystal lizard in Irithyll: Dropped by a Crystal Lizard past the Central Irithyll Fire Witches and to the left. Replaces Twinkling Titanite.
-Ring in Irithyll: After the Pontiff fight, in the dark hallways to the left of the area with the Giant Slaves. Replaces Dark Stoneplate Ring.
-Ring in Irithyll: Dropping down from in front of Pontiff Sulyvahn's church toward the Church of Yorshka. Replaces Ring of the Sun's First Born.
-Ring in Irithyll: In the Anor Londo cathedral after defeating Aldrich, up the elevators in Gwynevere's Chamber. Replaces Sun Princess Ring.
-Ring in Irithyll: In the area before and below Pontiff's cathedral, behind an illusory wall to the right. Replaces Magic Clutch Ring.
-Ring in Irithyll: Near the sewer centipede at the start of the lake leading to the Distant Manor bonfire. Replaces Ring of Sacrifice.
-
---- Irithyll Dungeon
-Key item in Irithyll Dungeon: In a chest found going past the Giant Slave to the sewer with the rats and the basilisks, up the stairs to the end, on the right side. Replaces Old Cell Key.
-Key item in Irithyll Dungeon: In the cell of the top corridor opposite to the bonfire in Irithyll Dungeon. Replaces Jailbreaker's Key.
-Key item in Irithyll Dungeon: In the room with the Wretches next to the main Jailer cell block, guarded by a Wretch. Replaces Profaned Coal.
-Flask upgrade + Powerful enemy in Irithyll Dungeon: Dropped by the mimic in the room after the outside area of Irithyll Dungeon overlooking Profaned Capital. Replaces Estus Shard.
-Ashes in Irithyll Dungeon: In the cell in the main Jailer cell block to the left of the Profaned Capital exit. Replaces Xanthous Ashes.
-Powerful enemy in Irithyll Dungeon: Dropped by the mimic found going past the Giant Slave to the sewer with the rats and the basilisks, up the first flight of stairs, on the left side. Replaces Dark Clutch Ring.
-Powerful enemy in Irithyll Dungeon: Dropped by the mimic in the main Jailer cell block. Replaces Titanite Scale 2x.
-Powerful enemy in Irithyll Dungeon: Dropped by the mimic in the side corridor from where the Giant Slave is standing, before the long ladder. Replaces Dragonslayer Lightning Arrow 10x.
-Small crystal lizard in Irithyll Dungeon: Dropped by the Crystal Lizard on the bottom corridor opposite from the bonfire in Irithyll Dungeon where a Wretch attacks you. Replaces Titanite Scale.
-Small crystal lizard in Irithyll Dungeon: Dropped by the Crystal Lizard where the Giant Slave is resting his head. Replaces Titanite Chunk.
-Ring in Irithyll Dungeon: In the cell in the main Jailer cell block to the left of the Profaned Capital exit. Replaces Dusk Crown Ring.
-
---- Profaned Capital
-Key item in Profaned Capital: Past the Profaned Capital Court Sorcerer, in the corridor overlooking the Irithyll Dungeon Giant Slave area. Replaces Jailer's Key Ring.
-Major boss in Profaned Capital: Dropped by Yhorm the Giant. Replaces Soul of Yhorm the Giant, Cinders of a Lord (Yhorm).
-Flask upgrade in Profaned Capital: On the corpse of Laddersmith Gilligan next to the Profaned Capital bonfire. Replaces Undead Bone Shard.
-Chest in Profaned Capital: To the right of the Profaned Flame, in the room with the many Jailers looking at the mimics. Replaces Ember.
-Powerful enemy in Profaned Capital: Dropped by the court sorcerer above the toxic pool. Replaces Logan's Scroll.
-Powerful enemy in Profaned Capital: Dropped by the left mimic surrounded by the Jailers to the right of the Profaned Flame. Replaces Greatshield of Glory.
-Powerful enemy in Profaned Capital: Dropped by the mimic on the second floor of the Monstrosity of Sin building. Replaces Court Sorcerer's Staff.
-Powerful enemy in Profaned Capital: Dropped by the right mimic surrounded by the Jailers to the right of the Profaned Flame. Replaces Rusted Gold Coin 2x.
-Small crystal lizard in Profaned Capital: Dropped by the first Crystal Lizard in the corridors before the Profaned Capital toxic pool. Replaces Twinkling Titanite.
-Small crystal lizard in Profaned Capital: Dropped by the second Crystal Lizard in the corridors before the Profaned Capital toxic pool. Replaces Twinkling Titanite.
-Ring in Profaned Capital: In the inner cave of the Profaned Capital toxic pool. Replaces Cursebite Ring.
-
---- Irithyll Dungeon with Jailbreaker's Key
-Ring in Irithyll Dungeon with Jailbreaker's Key: Dropping down from the Jailbreaker's Key shortcut at the end of the top corridor on the bonfire side in Irithyll Dungeon. Replaces Bellowing Dragoncrest Ring.
-
---- Irithyll Dungeon Jailer's Cells
-Ashes in Irithyll Dungeon Jailer's Cells: In the cell at the far end of the bottom corridor on the bonfire side in Irithyll Dungeon. Replaces Prisoner Chief's Ashes.
-
---- Irithyll Dungeon Old Cell
-Ring in Irithyll Dungeon Old Cell: In the Old Cell where Siegward is rescued. Replaces Covetous Gold Serpent Ring.
-
---- Lothric Castle
-Major boss in Lothric Castle: Dropped by Dancer of the Boreal Valley. Replaces Soul of the Dancer.
-Major boss in Lothric Castle: Dropped by Dragonslayer Armour. Replaces Soul of Dragonslayer Armour.
-Flask upgrade in Lothric Castle: Dropping down from the bridge where the Pus of Man wyverns breathe fire on the far side from the bonfire. Replaces Undead Bone Shard.
-Chest in Lothric Castle: In a chest climbing the ladder to the rooftop outside the Dragonslayer Armour fight, continuing the loop past the Red-Eyed Lothric Knight. Replaces Titanite Scale 3x.
-Chest in Lothric Castle: In a chest in the basement with the Outrider Knight. Replaces Spirit Tree Crest Shield, Titanite Scale, Twinkling Titanite, Twinkling Titanite 2x.
-Chest in Lothric Castle: In a chest in the chapel to the right of the Dragonslayer Armour fight. Replaces Titanite Scale.
-Chest in Lothric Castle: In a chest right after the Lothric Castle bonfire. Replaces Hood of Prayer.
-Powerful enemy in Lothric Castle: Dropped by the Boreal Outrider Knight in the basement. Replaces Irithyll Rapier.
-Powerful enemy in Lothric Castle: Dropped by the crawling mimic at the top of the room with the firebomb-throwing hollows. Replaces Titanite Scale 3x.
-Powerful enemy in Lothric Castle: Dropped by the first Pus of Man wyvern. Replaces Titanite Chunk 2x, Ember 2x.
-Powerful enemy in Lothric Castle: Dropped by the mimic in the room next to the second Pus of Man wyvern. Replaces Sunlight Straight Sword.
-Powerful enemy in Lothric Castle: Dropped by the second Pus of Man wyvern. Replaces Titanite Chunk 2x, Ember 2x.
-Small crystal lizard in Lothric Castle: Dropped by the Crystal Lizard after the room with the firebomb-throwing hollows around the front. Replaces Twinkling Titanite 2x.
-Small crystal lizard in Lothric Castle: Dropped by the Crystal Lizard near the thieves after dropping down to the area with the Pus of Man transforming hollows. Replaces Twinkling Titanite 2x.
-Ring in Lothric Castle: Climbing the ladder to the rooftop outside the Dragonslayer Armour fight, past the Large Hollow Soldier, down into the room with the tables. Replaces Knight's Ring.
-Ring in Lothric Castle: From the chapel to the right of the Dragonslayer Armour fight, on the balcony to the left. Replaces Red Tearstone Ring.
-
---- Consumed King's Gardens
-Major boss in Consumed King's Gardens: Dropped by Consumed King Oceiros. Replaces Soul of Consumed Oceiros.
-Flask upgrade in Consumed King's Gardens: From the middle level of the first Consumed King's Gardens elevator, out the balcony and to the right. Replaces Estus Shard.
-Chest in Consumed King's Gardens: Chest after Oceiros fight. Replaces Titanite Scale.
-Ring in Consumed King's Gardens: Along the right wall of the garden, next to the first elevator building. Replaces Ring of Sacrifice.
-Ring in Consumed King's Gardens: From the middle level of the second elevator, toward the Oceiros boss fight. Replaces Dragonscale Ring.
-
---- Untended Graves
-Key item in Untended Graves: Behind an illusory wall, in the same location Irina sits in Firelink Shrine. Replaces Eyes of a Fire Keeper.
-Major boss in Untended Graves: Dropped by Champion Gundyr. Replaces Soul of Champion Gundyr.
-Shop in Untended Graves: Sold or dropped by Untended Graves Handmaid. Killing her is not recommended
-Ring in Untended Graves: In the coffin similar to your initial spawn location, guarded by Corvians. Replaces Ashen Estus Ring.
-Ring in Untended Graves: On a cliffside to the right of the main path leading up to dark Firelink Shrine, after Abyss Watchers is defeated. Replaces Hornet Ring.
-
---- Lothric Castle after Yhorm and Aldrich
-Key item in Lothric Castle after Yhorm and Aldrich: Before the door to the Grand Archives after Aldrich and Yhorm are killed. Replaces Gotthard Twinswords, Grand Archives Key.
-
---- Grand Archives
-Major boss in Grand Archives: Dropped by Twin Princes. Replaces Soul of the Twin Princes, Cinders of a Lord (Lothric).
-Flask upgrade in Grand Archives: On the Archives roof near the three Winged Knights, in a side area overlooking the ocean. Replaces Estus Shard.
-Flask upgrade in Grand Archives: On the corpse of a sitting Archives Scholar on a balcony high in the Archives overlooking the area with the Grand Archives Scholars with a shortcut ladder, near the final wax pool. Replaces Undead Bone Shard.
-Chest in Grand Archives: Behind a bookshelf in the dark room with the Crystal Lizards, moved by a lever in the same room. Replaces Witch's Locks.
-Chest in Grand Archives: In a chest after the first elevator shortcut with the movable bookshelf, in the area with the Grand Archives Scholars, to the left of the stairwell leading up to the roof. Replaces Titanite Scale 3x.
-Chest in Grand Archives: In a chest on the Archives first floor, behind a bookshelf moved by pulling a lever in the middle of the second floor between two cursed bookshelves. Replaces Titanite Slab.
-Chest in Grand Archives: In a chest reachable after dropping down from the Archives rafters and down a ladder near the Corpse-grub. Replaces Divine Blessing, Twinkling Titanite 3x.
-Powerful enemy in Grand Archives: Dropped by an Outrider Knight past the Crystal Sage's third floor location and an illusory wall. Replaces Outrider Knight Helm.
-Powerful enemy in Grand Archives: Dropped by Black Hand Kamui before the stairs leading up to Twin Princes. Replaces Onikiri and Ubadachi.
-Powerful enemy in Grand Archives: Dropped by Daughter of Crystal Kriemhild before the stairs leading up to Twin Princes. Replaces Sage's Crystal Staff.
-Powerful enemy in Grand Archives: Dropped by Lion Knight Albert before the stairs leading up to Twin Princes. Replaces Golden Wing Crest Shield.
-Powerful enemy in Grand Archives: Dropped by the Grand Archives Crystal Sage. Replaces Crystal Scroll.
-Small crystal lizard in Grand Archives: Dropped by a Crystal Lizard found heading from the first elevator shortcut with the movable bookshelf, on the right side up the stairs before exiting to the roof. Replaces Twinkling Titanite.
-Small crystal lizard in Grand Archives: Dropped by a Crystal Lizard on first floor bookshelves. Can be acessed by dropping down to the left at the end of the bridge which is the Crystal Sage's final location. Replaces Titanite Scale 2x.
-Small crystal lizard in Grand Archives: Dropped by a Crystal Lizard on the Archives first floor in the dark room past the large wax pool. Replaces Twinkling Titanite, Twinkling Titanite 2x.
-Small crystal lizard in Grand Archives: Dropped by one of the pair of Crystal Lizards, on the left side, found going up a slope past the gargoyle on the Archives roof. Replaces Twinkling Titanite.
-Small crystal lizard in Grand Archives: Dropped by one of the pair of Crystal Lizards, on the right side, found going up a slope past the gargoyle on the Archives roof. Replaces Twinkling Titanite.
-Small crystal lizard in Grand Archives: Dropped by the Crystal Lizard on the Archives first floor along the left wall. Replaces Crystal Gem, Twinkling Titanite.
-Small crystal lizard in Grand Archives: Dropped by the Crystal Lizard on the Archives second floor, going toward the stairs/balcony. Replaces Twinkling Titanite 2x.
-Ring in Grand Archives: At the top of the ladder in roof the area with the Winged Knights. Replaces Hunter's Ring.
-Ring in Grand Archives: From the first shortcut elevator with the movable bookshelf, past the Scholars right before going outside onto the roof, in an alcove to the right with many Clawed Curse bookshelves. Replaces Fleshbite Ring.
-Ring in Grand Archives: On the corpse of a sitting Archives Scholar between two bookshelves, accessible by activating a lever before crossing the bridge that is the Crystal Sage's final location. Replaces Scholar Ring.
-
---- Archdragon Peak
-Major boss in Archdragon Peak: Dropped by Ancient Wyvern. Replaces Dragon Head Stone.
-Major boss in Archdragon Peak: Dropped by Nameless King. Replaces Soul of the Nameless King.
-Chest in Archdragon Peak: In a chest after the sagging wooden bridge on the way to the Belfry, in the building with the Crystal Lizard. Replaces Titanite Scale 3x.
-Chest in Archdragon Peak: In the chest before the ladder climbing up to the Havel Knight. Replaces Twinkling Titanite 3x.
-Ashes in Archdragon Peak: In the run-up to the Dragon Altar after the Belfry bonfire, in a side path to the left side. Replaces Dragon Chaser's Ashes.
-Powerful enemy in Archdragon Peak: Dropped from any of the Havel Knights. Replaces Dragon Tooth.
-Small crystal lizard in Archdragon Peak: Dropped by Crystal Lizard in the building after the sagging wooden bridge toward the Belfry. Replaces Twinkling Titanite 3x.
-Ring in Archdragon Peak: After the long hallway after the Mausoleum bonfire, before the rope bridge, up the long ladder. Replaces Thunder Stoneplate Ring.
-Ring in Archdragon Peak: Received using Path of the Dragon at the Altar by the Mausoleum bonfire. Replaces Calamity Ring.
-Ring in Archdragon Peak: To the left of gate leading to Ancient Wyvern, past the Rock Lizard. Replaces Lightning Clutch Ring.
-Ring in Archdragon Peak: To the right of the area where the Ancient Wyvern lands, dropping down onto the ledge. Replaces Ring of Steel Protection.
-
---- Pre-Contraption Ariandel
-Key item in pre-Contraption Ariandel: Dropped by Sir Vilhelm. Replaces Contraption Key.
-Major boss in pre-Contraption Ariandel: Dropped by Champion's Gravetender. Replaces Valorheart.
-Ashes in pre-Contraption Ariandel: At the very top of the Millwood Knight tower after climbing up the second ladder. Replaces Captain's Ashes.
-Powerful enemy in pre-Contraption Ariandel: Dropped by Sir Vilhelm. Replaces Onyx Blade.
-Small crystal lizard in pre-Contraption Ariandel: Crossing the bridge after Corvian Settlement bonfire, follow the left edge past another bridge until a dropdown point looping back to the bonfire. Hug the bonfire building's outer wall along the right side. Replaces Large Titanite Shard 2x.
-Small crystal lizard in pre-Contraption Ariandel: Dropped by a Crystal Lizard after the Rope Bridge Cave on the way to Corvian Settlement. Replaces Large Titanite Shard.
-Small crystal lizard in pre-Contraption Ariandel: Dropped by a Crystal Lizard in the Millwood Knight tower, climbing up the first ladder and descending the stairs down. Replaces Twinkling Titanite.
-Small crystal lizard in pre-Contraption Ariandel: Dropped by a Crystal Lizard in the tree branch area after climbing down the rope bridge, before the ledge with the Follower Javelin wielder. Replaces Twinkling Titanite.
-Small crystal lizard in pre-Contraption Ariandel: Dropped by a Crystal Lizard on a bridge in Corvian Settlement before the rooftop of the chapel with the Corvian Knight inside. Replaces Twinkling Titanite.
-Ring in pre-Contraption Ariandel: Given by Sister Friede while she is sitting in the Ariandel Chapel, or on the stool after she moves. Replaces Chillbite Ring.
-
---- Post-Contraption Ariandel
-Major boss in post-Contraption Ariandel: Dropped by Sister Friede. Replaces Soul of Sister Friede.
-Major boss in post-Contraption Ariandel: One-time drop after killing Father Ariandel and Friede (phase 2) for the first time. Replaces Titanite Slab.
-Small crystal lizard in post-Contraption Ariandel: Dropped by a Crystal Lizard past an illusory wall nearly straight left of the mechanism that moves the statue in the lowest level of the Ariandel Chapel basement. Replaces Twinkling Titanite.
-
---- Dreg Heap
-Key item in Dreg Heap: Found in the small room after beating Demon Prince. Replaces Small Envoy Banner.
-Major boss in Dreg Heap: Dropped by Demon Prince. Replaces Soul of the Demon Prince.
-Shop in Dreg Heap: Sold by Stone-humped Hag, or in her ashes
-Powerful enemy in Dreg Heap: Dropped by Desert Pyromancer Zoey. Replaces Flame Fan.
-Ring in Dreg Heap: After exiting the building with the Lothric Knights where the front crumbles, to the last room of the building to the right, up stairs past an illusory wall to the left, then dropping down after exiting the building from the last room. Replaces Covetous Silver Serpent Ring+3.
-Ring in Dreg Heap: After the dropdown where an angel first targets you, on an exposed edge to the left. Difficult to get without killing the angel. Replaces Ring of Steel Protection+3.
-Ring in Dreg Heap: Up the long branch close to the dropdown into the poison swamp area, in front of the cavern. Replaces Ring of Favor+3.
-
---- Ringed City
-Major boss in Ringed City: Dropped by Darkeater Midir. Replaces Soul of Darkeater Midir, Spears of the Church.
-Major boss in Ringed City: Dropped by Halflight, Spear of the Church. Replaces Titanite Slab, Filianore's Spear Ornament.
-Powerful enemy in Ringed City: Dropped by mimic in Shared Grave. In one of the rooms after dropping down near Gael's flag and then dropping down again. Replaces Ring of the Evil Eye+3.
-Powerful enemy in Ringed City: Given by Shira after defeating Midir, or dropped by her in post-Filianore Ringed City. Replaces Titanite Slab.
-Small crystal lizard in Ringed City: Dropped by the Crystal Lizard on the stairs going up from Shared Grave to Ringed Inner Wall elevator. Replaces Titanite Scale 2x.
-Small crystal lizard in Ringed City: Dropped by the Crystal Lizard right after the crumbling stairs in Shared Grave. Replaces Twinkling Titanite, Titanite Scale.
-Small crystal lizard in Ringed City: Dropped by the Crystal Lizard which runs across the bridge after climbing the very long ladder up from the muck pit. Replaces Twinkling Titanite 2x.
-Small crystal lizard in Ringed City: Dropped by the first Crystal Lizard on the side path on the right side of the Mausoleum Lookout courtyard. Replaces Twinkling Titanite, Titanite Scale.
-Ring in Ringed City: Dropping down from the building where Silver Knight Ledo invades. The building is up the very long ladder from the muck pit, down the path all the way to the right. Replaces Havel's Ring+3.
-Ring in Ringed City: From the mid level of the Ringed Inner Wall elevator that leads to the Midir fight, dropping back down toward the way to Filianore, onto a platform with a Gwyn statue. Try to land on the platform rather than the statue. Replaces Chloranthy Ring+3.
-Ring in Ringed City: Going up the very long ladder from the muck pit, then up some stairs, to the left, and across the bridge, in a building past the Ringed Knights. Also where Lapp can be found to tell him of the Purging Monument. Replaces Covetous Gold Serpent Ring+3.
-
---- Filianore's Rest
-Major boss in Filianore's Rest: Dropped by Slave Knight Gael. Replaces Soul of Slave Knight Gael.
-Powerful enemy in Filianore's Rest: Dropped by Shira, who invades you (ember not required) in the far-future version of her room. Replaces Crucifix of the Mad King.
-
---- Kiln of the First Flame
-Major boss in Kiln of the First Flame: Dropped by Soul of Cinder. Replaces Soul of the Lords.`;
-
-function parseData(text) {
-  const ariandelNames = new Set(['Pre-Contraption Ariandel', 'Post-Contraption Ariandel']);
-  const ringedCityNames = new Set(['Dreg Heap', 'Ringed City', "Filianore's Rest"]);
-
-  const baseGame = [];
-  const ariandel = [];
-  const ringedCity = [];
-
-  let currentLocation = null;
-
-  for (const line of text.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-
-    if (trimmed.startsWith('--- ')) {
-      const name = trimmed.slice(4);
-      currentLocation = { name, items: [] };
-
-      if (ariandelNames.has(name)) ariandel.push(currentLocation);
-      else if (ringedCityNames.has(name)) ringedCity.push(currentLocation);
-      else baseGame.push(currentLocation);
-      continue;
-    }
-
-    if (!currentLocation) continue;
-
-    const colonIdx = trimmed.indexOf(': ');
-    if (colonIdx === -1) continue;
-
-    const afterColon = trimmed.slice(colonIdx + 2);
-    const replacesIdx = afterColon.indexOf('. Replaces ');
-
-    if (replacesIdx !== -1) {
-      const desc = afterColon.slice(0, replacesIdx);
-      let replaces = afterColon.slice(replacesIdx + 11);
-      if (replaces.endsWith('.')) replaces = replaces.slice(0, -1);
-      currentLocation.items.push({ desc, replaces });
-    } else {
-      currentLocation.items.push({ desc: afterColon, replaces: null });
-    }
-  }
-
-  const sections = [{ section: null, locations: baseGame }];
-  if (ariandel.length) sections.push({ section: 'Ashes of Ariandel', locations: ariandel });
-  if (ringedCity.length) sections.push({ section: 'The Ringed City', locations: ringedCity });
-  return sections;
-}
-
-const DATA = parseData(RAW_DATA);
-
 const ROOM_KEY = 'ds3-tracker-room';
+const CAT_KEY = 'ds3-tracker-categories';
 
 function itemId(locName, idx) {
-  // Firebase keys cannot contain . $ # [ ] / — encode periods
   return `${locName.replace(/\./g, '%2E')}::${idx}`;
 }
 
@@ -389,7 +23,44 @@ let currentFilter = 'all';
 let currentRoom = null;
 let itemsRef = null;
 let firebaseListener = null;
+let categoriesRef = null;
+let categoriesListener = null;
 let waitingForInitialData = false;
+
+let enabledCategories = new Set(CATEGORIES.map(c => c.id));
+let enabledSections = new Set(['base', 'ariandel', 'ringed']);
+
+(function loadSavedState() {
+  const savedCat = localStorage.getItem(CAT_KEY);
+  if (savedCat) {
+    try {
+      const arr = JSON.parse(savedCat);
+      if (Array.isArray(arr)) enabledCategories = new Set(arr);
+    } catch (e) {}
+  }
+})();
+
+function saveCategoryState() {
+  localStorage.setItem(CAT_KEY, JSON.stringify([...enabledCategories]));
+}
+
+function syncCategoriesToFirebase() {
+  if (categoriesRef) categoriesRef.set([...enabledCategories]);
+}
+
+function updateCategoryButtons() {
+  document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
+    if (enabledCategories.has(btn.dataset.cat)) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+}
+
+function updateSectionButtons() {
+  document.querySelectorAll('.sec-btn').forEach(btn => {
+    if (enabledSections.has(btn.dataset.sec)) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+}
 
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -402,6 +73,9 @@ function joinRoom(code) {
   if (firebaseListener && itemsRef) {
     itemsRef.off('value', firebaseListener);
   }
+  if (categoriesListener && categoriesRef) {
+    categoriesRef.off('value', categoriesListener);
+  }
 
   currentRoom = code.toUpperCase();
   localStorage.setItem(ROOM_KEY, currentRoom);
@@ -409,6 +83,7 @@ function joinRoom(code) {
   url.searchParams.set('room', currentRoom);
   history.replaceState(null, '', url);
   itemsRef = db.ref('ds3rooms/' + currentRoom + '/items');
+  categoriesRef = db.ref('ds3rooms/' + currentRoom + '/categories');
 
   firebaseListener = itemsRef.on('value', (snapshot) => {
     document.getElementById('syncError').hidden = true;
@@ -427,6 +102,20 @@ function joinRoom(code) {
     }
   });
 
+  categoriesListener = categoriesRef.on('value', (snapshot) => {
+    const val = snapshot.val();
+    if (val !== null) {
+      const arr = Array.isArray(val) ? val : Object.values(val);
+      enabledCategories = new Set(arr);
+      saveCategoryState();
+      updateCategoryButtons();
+      applyFilters();
+      updateProgress();
+    } else {
+      categoriesRef.set([...enabledCategories]);
+    }
+  });
+
   document.getElementById('roomOverlay').hidden = true;
   document.getElementById('roomBadge').hidden = false;
   document.getElementById('roomCodeDisplay').textContent = currentRoom;
@@ -436,8 +125,13 @@ function leaveRoom() {
   if (firebaseListener && itemsRef) {
     itemsRef.off('value', firebaseListener);
   }
+  if (categoriesListener && categoriesRef) {
+    categoriesRef.off('value', categoriesListener);
+  }
   firebaseListener = null;
   itemsRef = null;
+  categoriesListener = null;
+  categoriesRef = null;
   currentRoom = null;
   checkedState = {};
   localStorage.removeItem(ROOM_KEY);
@@ -459,32 +153,66 @@ function showSyncError(msg) {
   el.hidden = false;
 }
 
-function setItemChecked(id, checked) {
-  if (checked) checkedState[id] = true;
-  else delete checkedState[id];
+const undoStack = [];
+const UNDO_MAX = 50;
+
+function updateUndoBtn() {
+  document.getElementById('undoBtn').disabled = undoStack.length === 0;
+}
+
+function batchSetItems(changes, record) {
+  if (record) {
+    undoStack.push({ items: changes.map(c => ({ id: c.id, wasChecked: !!checkedState[c.id] })) });
+    if (undoStack.length > UNDO_MAX) undoStack.shift();
+    updateUndoBtn();
+  }
+
+  const fbUpdate = {};
+  for (const { id, checked } of changes) {
+    if (checked) checkedState[id] = true;
+    else delete checkedState[id];
+    if (itemsRef) fbUpdate[id] = checked ? true : null;
+  }
   refreshUI();
 
-  if (!itemsRef) return;
-  const op = checked ? itemsRef.child(id).set(true) : itemsRef.child(id).remove();
-  op.catch(() => showSyncError('Failed to sync \u2014 check Firebase database rules (must allow read/write).'));
+  if (itemsRef && Object.keys(fbUpdate).length) {
+    itemsRef.update(fbUpdate)
+      .catch(() => showSyncError('Failed to sync \u2014 check Firebase database rules (must allow read/write).'));
+  }
+}
+
+function setItemChecked(id, checked) {
+  batchSetItems([{ id, checked }], true);
 }
 
 function resetAllProgress() {
   if (!itemsRef) return;
   checkedState = {};
+  undoStack.length = 0;
+  updateUndoBtn();
   refreshUI();
   itemsRef.remove()
     .catch(() => showSyncError('Failed to reset \u2014 check Firebase database rules.'));
 }
 
+function sectionKey(s) {
+  if (!s.section) return 'base';
+  if (s.section === 'Ashes of Ariandel') return 'ariandel';
+  return 'ringed';
+}
+
 function getTotalAndChecked() {
   let total = 0, done = 0;
-  DATA.forEach(s => s.locations.forEach(loc => {
-    loc.items.forEach((_, i) => {
-      total++;
-      if (checkedState[itemId(loc.name, i)]) done++;
+  DATA.forEach(s => {
+    if (!enabledSections.has(sectionKey(s))) return;
+    s.locations.forEach(loc => {
+      loc.items.forEach((item, i) => {
+        if (!enabledCategories.has(item.cat)) return;
+        total++;
+        if (checkedState[itemId(loc.name, i)]) done++;
+      });
     });
-  }));
+  });
   return { total, done };
 }
 
@@ -496,14 +224,66 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = `${pct}%`;
 }
 
+function renderCategoryToggles() {
+  const container = document.getElementById('categoryToggles');
+  container.querySelectorAll('.cat-btn, .sec-btn, .toggle-sep').forEach(b => b.remove());
+
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (enabledCategories.has(cat.id) ? ' active' : '');
+    btn.dataset.cat = cat.id;
+    btn.textContent = cat.label;
+    btn.addEventListener('click', () => {
+      if (enabledCategories.has(cat.id)) {
+        enabledCategories.delete(cat.id);
+        btn.classList.remove('active');
+      } else {
+        enabledCategories.add(cat.id);
+        btn.classList.add('active');
+      }
+      saveCategoryState();
+      syncCategoriesToFirebase();
+      applyFilters();
+      updateProgress();
+    });
+    container.appendChild(btn);
+  });
+
+  const sep = document.createElement('div');
+  sep.className = 'toggle-sep';
+  container.appendChild(sep);
+
+  [{ id: 'base', label: 'Base Game' }, { id: 'ariandel', label: 'Ariandel' }, { id: 'ringed', label: 'Ringed City' }].forEach(sec => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn sec-btn' + (enabledSections.has(sec.id) ? ' active' : '');
+    btn.dataset.sec = sec.id;
+    btn.textContent = sec.label;
+    btn.addEventListener('click', () => {
+      if (enabledSections.has(sec.id)) {
+        enabledSections.delete(sec.id);
+        btn.classList.remove('active');
+      } else {
+        enabledSections.add(sec.id);
+        btn.classList.add('active');
+      }
+      applyFilters();
+      updateProgress();
+    });
+    container.appendChild(btn);
+  });
+}
+
 function render() {
   const main = document.getElementById('main');
   main.innerHTML = '';
 
   DATA.forEach(section => {
+    const secKey = sectionKey(section);
+
     if (section.section) {
       const divider = document.createElement('div');
       divider.className = 'dlc-divider';
+      divider.dataset.section = secKey;
       divider.innerHTML = `<h2>${section.section}</h2>`;
       main.appendChild(divider);
     }
@@ -512,15 +292,13 @@ function render() {
       const locDiv = document.createElement('div');
       locDiv.className = 'location';
       locDiv.dataset.name = loc.name.toLowerCase();
-
-      const locDone = loc.items.filter((_, i) => checkedState[itemId(loc.name, i)]).length;
-      if (locDone === loc.items.length) locDiv.classList.add('all-done');
+      locDiv.dataset.section = secKey;
 
       const header = document.createElement('div');
       header.className = 'location-header';
       header.innerHTML = `
         <h3>${loc.name}</h3>
-        <span class="location-count"><span class="done">${locDone}</span> / ${loc.items.length}</span>
+        <span class="location-count"><span class="done">0</span> / <span class="loc-total">${loc.items.length}</span></span>
       `;
       locDiv.appendChild(header);
 
@@ -533,6 +311,15 @@ function render() {
         itemsDiv.dataset.collapsed = collapsed ? 'false' : 'true';
       });
 
+      header.querySelector('.location-count').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const visible = [...itemsDiv.querySelectorAll('.item:not([data-hidden="true"])')];
+        if (!visible.length) return;
+        const allChecked = visible.every(el => el.classList.contains('checked'));
+        const changes = visible.map(el => ({ id: el.dataset.id, checked: !allChecked }));
+        batchSetItems(changes, true);
+      });
+
       loc.items.forEach((item, i) => {
         const id = itemId(loc.name, i);
         const isChecked = !!checkedState[id];
@@ -540,6 +327,7 @@ function render() {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'item' + (isChecked ? ' checked' : '');
         itemDiv.dataset.id = id;
+        itemDiv.dataset.cat = item.cat;
 
         const cb = document.createElement('input');
         cb.type = 'checkbox';
@@ -589,26 +377,15 @@ function render() {
 
 function refreshUI() {
   document.querySelectorAll('.location').forEach(locEl => {
-    let locDone = 0;
-    let locTotal = 0;
-
     locEl.querySelectorAll('.item').forEach(itemEl => {
       const id = itemEl.dataset.id;
       const isChecked = !!checkedState[id];
-      locTotal++;
-      if (isChecked) locDone++;
 
       const cb = itemEl.querySelector('input[type="checkbox"]');
       if (cb.checked !== isChecked) cb.checked = isChecked;
       if (isChecked) itemEl.classList.add('checked');
       else itemEl.classList.remove('checked');
     });
-
-    const countEl = locEl.querySelector('.done');
-    if (countEl) countEl.textContent = locDone;
-
-    if (locDone === locTotal) locEl.classList.add('all-done');
-    else locEl.classList.remove('all-done');
   });
 
   updateProgress();
@@ -618,23 +395,46 @@ function refreshUI() {
 function applyFilters() {
   const query = document.getElementById('searchBox').value.toLowerCase().trim();
 
+  document.querySelectorAll('.dlc-divider').forEach(d => {
+    d.dataset.hidden = enabledSections.has(d.dataset.section) ? 'false' : 'true';
+  });
+
   document.querySelectorAll('.location').forEach(locEl => {
     const locName = locEl.dataset.name;
+    const sectionEnabled = enabledSections.has(locEl.dataset.section);
     let anyVisible = false;
+    let locDone = 0;
+    let locTotal = 0;
 
     locEl.querySelectorAll('.item').forEach(itemEl => {
       const id = itemEl.dataset.id;
+      const cat = itemEl.dataset.cat;
       const isChecked = !!checkedState[id];
+      const catEnabled = enabledCategories.has(cat);
+
+      if (catEnabled) {
+        locTotal++;
+        if (isChecked) locDone++;
+      }
+
       const text = itemEl.textContent.toLowerCase();
       const matchesSearch = !query || text.includes(query) || locName.includes(query);
       const matchesFilter = currentFilter === 'all' ||
         (currentFilter === 'checked' && isChecked) ||
         (currentFilter === 'unchecked' && !isChecked);
 
-      const visible = matchesSearch && matchesFilter;
+      const visible = sectionEnabled && catEnabled && matchesSearch && matchesFilter;
       itemEl.dataset.hidden = visible ? 'false' : 'true';
       if (visible) anyVisible = true;
     });
+
+    const countEl = locEl.querySelector('.done');
+    const totalEl = locEl.querySelector('.loc-total');
+    if (countEl) countEl.textContent = locDone;
+    if (totalEl) totalEl.textContent = locTotal;
+
+    if (locTotal > 0 && locDone === locTotal) locEl.classList.add('all-done');
+    else locEl.classList.remove('all-done');
 
     locEl.dataset.hidden = anyVisible ? 'false' : 'true';
   });
@@ -645,9 +445,9 @@ document.getElementById('infoToggle').addEventListener('click', () => {
   document.getElementById('infoContent').classList.toggle('open');
 });
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
     applyFilters();
@@ -655,6 +455,29 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+document.getElementById('collapseAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('.items').forEach(el => el.dataset.collapsed = 'true');
+});
+
+document.getElementById('expandAllBtn').addEventListener('click', () => {
+  document.querySelectorAll('.items').forEach(el => el.dataset.collapsed = 'false');
+});
+
+document.getElementById('jumpNextBtn').addEventListener('click', () => {
+  const next = document.querySelector('.item:not(.checked):not([data-hidden="true"])');
+  if (!next) return;
+  const items = next.closest('.items');
+  if (items) items.dataset.collapsed = 'false';
+  next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+document.getElementById('undoBtn').addEventListener('click', () => {
+  if (!undoStack.length) return;
+  const entry = undoStack.pop();
+  updateUndoBtn();
+  batchSetItems(entry.items.map(i => ({ id: i.id, checked: i.wasChecked })), false);
+});
 
 document.getElementById('createRoomBtn').addEventListener('click', () => {
   const code = generateRoomCode();
@@ -683,6 +506,8 @@ document.getElementById('leaveRoomBtn').addEventListener('click', () => {
   leaveRoom();
   render();
 });
+
+renderCategoryToggles();
 
 const urlRoom = new URLSearchParams(location.search).get('room');
 const savedRoom = urlRoom ? urlRoom.trim().toUpperCase() : localStorage.getItem(ROOM_KEY);
